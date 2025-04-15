@@ -4,6 +4,30 @@ namespace squad_dma {
     public class Names {
         public static readonly Dictionary<string, ActorType> TechNames = new()
         {
+
+                        // HLL Axis
+                        
+            {"BP_Panther_max_C", ActorType.Tank },
+            {"BP_PanzerIV_C", ActorType.TankMGS },
+            {"BP_Luchs_C", ActorType.TrackedIFV },
+            {"GER_Outpost_C", ActorType.RallyPoint},
+            {"GER_Garrison_C", ActorType.Hab},
+
+                          // HLL USA
+            {"BP_JeepUS_C", ActorType.JeepTransport },
+            {"BP_MobileSpawn_US_C", ActorType.TrackedLogistics },
+            {"BP_Stuart_C", ActorType.TrackedIFV },
+            {"BP_Sherman_M4A3_75_W_C", ActorType.TankMGS },
+            {"BP_Sherman_Jumbo_76mm_C", ActorType.Tank },
+            {"BP_GMCDeuce_Transport_C", ActorType.TruckTransport },
+            {"BP_GMCDeuce_Supply_C", ActorType.TruckLogistics },
+            {"US_Outpost_C", ActorType.RallyPoint},
+            {"US_Garrison_C", ActorType.Hab},
+
+            //
+
+
+
             // Trucks
             {"BP_M-Gator_Transport_C", ActorType.TruckTransport},
             {"BP_M-Gator_Logistics_C", ActorType.TruckLogistics},

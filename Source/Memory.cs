@@ -522,20 +522,28 @@ namespace squad_dma
         /// </summary>
         /// <param name="length">Number of bytes to read.</param>
         /// <exception cref="DMAException"></exception>
-        public static string ReadString(ulong addr, uint length = 256)
+        public static string ReadString(ulong addr, uint byteLength = 256, bool isUnicode = false)
         {
             try
             {
-                if (length > PAGE_SIZE)
+                if (byteLength > PAGE_SIZE)
                     throw new DMAException("String length outside expected bounds!");
 
                 ThrowIfDMAShutdown();
-                var buf = _process.MemRead(addr, length, Vmm.FLAG_NOCACHE);
-                int nullTerminator = Array.IndexOf<byte>(buf, 0);
+                var buf = _process.MemRead(addr, byteLength, Vmm.FLAG_NOCACHE);
 
-                return nullTerminator != -1
-                    ? Encoding.Default.GetString(buf, 0, nullTerminator)
-                    : Encoding.Default.GetString(buf);
+                if (isUnicode)
+                {
+                    // UTF-16 decoding
+                    return Encoding.Unicode.GetString(buf).TrimEnd('\0');
+                }
+                else
+                {
+                    int nullTerminator = Array.IndexOf<byte>(buf, 0);
+                    return nullTerminator != -1
+                        ? Encoding.ASCII.GetString(buf, 0, nullTerminator)
+                        : Encoding.ASCII.GetString(buf);
+                }
             }
             catch (Exception ex)
             {

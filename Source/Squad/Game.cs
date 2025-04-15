@@ -175,21 +175,96 @@ public bool InGame => _inGame;
                 _gameInstance = Memory.ReadPtr(gameInstanceAddress);
             });
 
-        private bool GetCurrentLevel() =>
-            TryExecute(() =>
+        private bool GetCurrentLevel()
+        {
+            try
             {
-                var currentMapAddress = _gameInstance + Offsets.GameInstance.MapLoadingData;
-                //Program.Log($"CurrentLayer Address: {currentLayerAddress:X}");
-                var currentMap = Memory.ReadPtr(currentMapAddress);
+                string mapName = GetCurrentMapName();
+                if (mapName == "MAIN MENU")
+                {
+                    Memory.GameStatus = GameStatus.Menu;
+                    Memory.Restart();
+                    return false;
+                }
+                else
+                {
+                    _currentLevel = mapName;
+                    Program.Log($"Current level is {_currentLevel}");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Program.Log($"ERROR in GetCurrentLevel: {ex.Message}");
+                return false;
+            }
+        }
+        public string GetCurrentMapName()
+        {
+            try
+            {
+                // Read MapLoadingData pointer
+                var mapLoadingDataAddr = Memory.ReadPtr(_gameInstance + Offsets.GameInstance.MapLoadingData);
+                if (!IsValidPointer(mapLoadingDataAddr))
+                {
+                    Program.Log("ERROR: MapLoadingData address is null or invalid");
+                    return "Unknown";
+                }
+                Program.Log($"MapLoadingData Address: 0x{mapLoadingDataAddr:X}");
 
-                var currentmap = currentMapAddress + Offsets.UMapLoadingScreenData.MapName;
-                //Program.Log($"CurrentLevelId Address: {currentLevelIdAddress:X}");
-                string mapName = Memory.ReadString(currentMapAddress);
+                // Read FText (MapName) pointer
+                var ftextAddr = mapLoadingDataAddr + Offsets.UMapLoadingScreenData.MapName;
+                var textDataPtr = Memory.ReadPtr(ftextAddr);
+                if (!IsValidPointer(textDataPtr))
+                {
+                    Program.Log("ERROR: FText.TextData is null or invalid");
+                    return "Unknown";
+                }
+                Program.Log($"FText.TextData Address: 0x{textDataPtr:X}");
 
-                _currentLevel = mapName;
-                Program.Log($"Current level is {_currentLevel}");
-            });
+                // Read FText SourceString (assuming Unreal Engine 4/5 FText layout)
+                // FText often has a TSharedPtr<FString> for SourceString, typically at offset 0x18 or 0x20
+                var sourceStringAddr = textDataPtr + 0x28; // Adjust based on engine version
+                var stringPtr = Memory.ReadPtr(sourceStringAddr);
+                var stringLength = Memory.ReadValue<int>(sourceStringAddr + 0x8); // Length typically follows pointer
+                Program.Log($"SourceString Address: 0x{stringPtr:X}, Length: {stringLength}");
 
+                if (!IsValidPointer(stringPtr) || stringLength <= 0 || stringLength > 1024)
+                {
+                    Program.Log($"ERROR: Invalid SourceString (ptr=0x{stringPtr:X}, length={stringLength})");
+                    return "Unknown";
+                }
+
+                // Read the string (UTF-16 encoding)
+                var mapName = Memory.ReadString(stringPtr, (uint)(stringLength * 2), true);
+                if (string.IsNullOrEmpty(mapName) || mapName.Length < 3 || !IsValidMapName(mapName))
+                {
+                    Program.Log($"ERROR: Invalid map name: {mapName}");
+                    return "Unknown";
+                }
+
+                Program.Log($"Success: Map Name: {mapName}");
+                return mapName.ToUpper();
+            }
+            catch (Exception ex)
+            {
+                Program.Log($"ERROR reading map name: {ex.Message}");
+                return "Unknown";
+            }
+        }
+
+        // Helper method to validate pointers
+        private bool IsValidPointer(ulong ptr)
+        {
+            // Basic check for null or unrealistic addresses
+            return ptr != 0 && ptr > 0x10000 && ptr < 0x7FFFFFFFFFFF;
+        }
+
+        // Helper method to validate map name
+        private bool IsValidMapName(string name)
+        {
+            return name.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c) || c == '_' || c == '-');
+        }
         private bool InitActors() =>
             TryExecute(() =>
             {

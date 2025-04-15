@@ -109,7 +109,7 @@ namespace squad_dma
             try
             {
                 var count = this.ActorCount;
-                if (count < 1)
+                if (count < 10)
                     throw new GameEnded();
 
                 var initialActorScatterMap = new ScatterReadMap(count);
@@ -156,10 +156,10 @@ namespace squad_dma
                     {
                         actorName = "Unknown";
                     }
-                    Program.Log($"UpdateList: Actor 0x{item.Key:X}, NameId={item.Value}, Name={actorName}");
+                    //Program.Log($"UpdateList: Actor 0x{item.Key:X}, NameId={item.Value}, Name={actorName}");
                 }
 
-                var playersNameIDs = names.Where(x => x.Value.Contains("Pawn") || Names.TechNames.ContainsKey(x.Value)).ToDictionary();
+                var playersNameIDs = names.Where(x => x.Value.Contains("PlayerPawn") || Names.TechNames.ContainsKey(x.Value)).ToDictionary();
                 var filteredActors = actorBaseWithName.Where(actor => playersNameIDs.ContainsKey(actor.Value)).Select(actor => actor.Key).ToList();
                 count = filteredActors.Count;
 
@@ -269,14 +269,14 @@ namespace squad_dma
                         teamInfoRound.AddEntry<byte>(i, 9, pawnPlayerState, null, Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlayerTeam);
                         teamInfoRound.AddEntry<int>(i, 10, pawnPlayerState, null, Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlatoonIndex);
 
-                        /*var meshPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 11, actorAddr + Offsets.AShooterCharacter.Mesh);
-                        meshRound.AddEntry<FTransform>(i, 12, meshPtr, null, 0x1C0); // Vérifier si 0x1C0 est correct
-                        var boneArrayPtr = meshRound.AddEntry<ulong>(i, 13, meshPtr, null, 0x4B0); // Vérifier si 0x4B0 est correct
+                        var meshPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 11, actorAddr + Offsets.AShooterCharacter.Mesh);
+                        meshRound.AddEntry<FTransform>(i, 12, meshPtr, null, 0x1C0);
+                        var boneArrayPtr = meshRound.AddEntry<ulong>(i, 13, meshPtr, null, 0x4B0);
 
                         for (int j = 0; j < boneIds.Length; j++)
                         {
-                            boneInfoRound.AddEntry<FTransform>(i, 14 + j, boneArrayPtr, null, (uint)(boneIds[j] * 0x30));
-                        } */
+                            boneInfoRound.AddEntry<FTransform>(i, 25 + j, boneArrayPtr, null, (uint)(boneIds[j] * 0x30));
+                        }
                     } /*
                     else if (Names.HLLFortifications.Contains(actorType))
                     {
@@ -294,8 +294,8 @@ namespace squad_dma
                         teamInfoRound.AddEntry<byte>(i, 5, actorAddr + Offsets.ABaseVehicle.Team);
                     }
 
-                    instigatorAndRootRound.AddEntry<Vector3>(i, 11, rootComponent, null, Offsets.USceneComponent.RelativeLocation);
-                    instigatorAndRootRound.AddEntry<Vector3>(i, 12, rootComponent, null, Offsets.USceneComponent.RelativeRotation);
+                    instigatorAndRootRound.AddEntry<Vector3>(i, 14, rootComponent, null, Offsets.USceneComponent.RelativeLocation);
+                    instigatorAndRootRound.AddEntry<Vector3>(i, 15, rootComponent, null, Offsets.USceneComponent.RelativeRotation);
                 }
 
                 playerInfoScatterMap.Execute();
@@ -371,7 +371,7 @@ namespace squad_dma
                             }
                         }
 
-                        /* if (results.TryGetValue(11, out var meshResult) && meshResult.TryGetResult<ulong>(out var meshAddr))
+                         if (results.TryGetValue(11, out var meshResult) && meshResult.TryGetResult<ulong>(out var meshAddr))
                         {
                             actor.Mesh = meshAddr;
                             if (meshAddr == 0)
@@ -382,7 +382,7 @@ namespace squad_dma
                             }
 
                             // ... (Bones) 
-                        } */
+                        }
 
                         else
                         {
@@ -390,35 +390,7 @@ namespace squad_dma
                             actor.BoneScreenPositions = new Vector2[boneIds.Length];
                             Array.Clear(actor.BoneScreenPositions, 0, actor.BoneScreenPositions.Length);
                         }
-                    }/*
-                    else if (Names.HLLFortifications.Contains(actorType))
-                    {
-                        if (results.TryGetValue(3, out var healthResult) && healthResult.TryGetResult<float>(out var hp))
-                        {
-                            actor.Health = hp;
-                            actor.MaxHealth = 100.0f; // Supposé, à confirmer
-                        }
-                        else
-                        {
-                            actor.Health = -1;
-                            actor.MaxHealth = -1;
-                        }
-
-                        if (actor.Health > 0 && actor.MaxHealth > 0)
-                        {
-                            actor.Health = (actor.Health / actor.MaxHealth) * 100;
-                        }
-
-                        if (results.TryGetValue(5, out var teamResult) &&
-                            teamResult.TryGetResult<byte>(out var teamId))
-                        {
-                            actor.TeamID = teamId;
-                        }
-                        else
-                        {
-                            actor.TeamID = -1;
-                        }
-                    }*/
+                    }
                     else // Vehicle
                     {
                         if (results.TryGetValue(3, out var healthResult) && healthResult.TryGetResult<ushort>(out var currentHealth))
@@ -455,13 +427,13 @@ namespace squad_dma
                         }
                     }
 
-                    if (results.TryGetValue(11, out var locResult) &&
+                    if (results.TryGetValue(14, out var locResult) &&
                         locResult.TryGetResult<Vector3>(out var location))
                     {
                         actor.Position = location;
                     }
 
-                    if (results.TryGetValue(12, out var rotResult) &&
+                    if (results.TryGetValue(15, out var rotResult) &&
                         rotResult.TryGetResult<Vector3>(out var rotation))
                     {
                         actor.Rotation = new Vector2(rotation.Y, rotation.X);

@@ -19,7 +19,6 @@
     public struct GameInstance
     {
         public const uint LocalPlayers = 0x38;
-        public const uint CurrentLayer = 0x568; // For Squad
         public const uint MapLoadingData = 0x688; // UMapLoadingScreenData*
 
     }
@@ -102,8 +101,8 @@
     }
     public static class AShooterCharacter
     {
-        public const int Health = 0x0A50; // À confirmer
-        public const int Mesh = 0x0A60;   // À confirmer
+        public const int Health = 0x9d4;
+        public const int Mesh = 0x280;
     }
 
     public static class APlayerState
