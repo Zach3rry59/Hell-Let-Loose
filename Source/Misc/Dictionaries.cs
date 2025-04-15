@@ -909,44 +909,6 @@ namespace squad_dma {
             {ActorType.TruckTransport, SkiaSharp.Views.Desktop.Extensions.ToSKBitmap(Properties.Resources.TruckTransport)},
             {ActorType.TruckTransportArmed, SkiaSharp.Views.Desktop.Extensions.ToSKBitmap(Properties.Resources.TruckTransportArmed)},
         };
-        public static readonly Dictionary<string, Team> Teams = new()
-        {
-            //Obsolete
-            // Vanilla
-            {"BP_Soldier_RU_", Team.RU},
-            {"BP_Soldier_VDV", Team.RU},
-            {"BP_Soldier_USM", Team.US},
-            {"BP_Soldier_USA", Team.US},
-            {"BP_Soldier_ADF", Team.AU},
-            {"BP_Soldier_BAF", Team.UK},
-            {"BP_Soldier_CAF", Team.CA},
-            {"BP_Soldier_PLA", Team.CN},
-            {"BP_Soldier_MEA", Team.ME},
-            {"BP_Soldier_TLF", Team.TR},
-            {"BP_Soldier_INS", Team.INS},
-            {"BP_Soldier_IMF", Team.IMF},
-            {"BP_Soldiers_WP", Team.WPMC},
-            // Global Escalation ?? 
-            {"BP_Soldier_Wag", Team.GE_Wagner},
-            {"BP_Soldier_GE_", Team.RU},
-            {"BP_Soldier_USS", Team.US},
-            {"BP_Soldier_TAF", Team.TR},
-            {"BP_Soldier_UAF", Team.GE_UA},
-            {"BP_Soldier_FDF", Team.GE_FI},
-            {"BP_Soldier_AQ_", Team.INS},
-            {"BP_Soldier_IDF", Team.GE_IS},
-            {"BP_Soldier_Ham", Team.INS},
-            {"BP_Soldier_BD_", Team.INS},
-            {"BP_Soldier_KON", Team.INS},
-            {"BP_Soldier_Hez", Team.INS},
-            {"BP_Soldier_PLF", Team.IMF},
-            // Steel Division
-            {"BP_Soldier_Tal", Team.SD_Taliban },
-            {"BP_Soldier_TSF", Team.TR },
-            {"BP_Soldier_SOF", Team.RU },
-            {"BP_Soldier_PMC", Team.WPMC },
-            {"BP_Soldier_SSP", Team.SD_Ukraine },
-        };
 
         public static readonly HashSet<ActorType> RotateBy45Degrees = [
             ActorType.DeployableAntiAir,

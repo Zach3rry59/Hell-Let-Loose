@@ -1,5 +1,4 @@
 using Offsets;
-using squad_dma.Source.Squad.Debug;
 using squad_dma.Source.Squad.Features;
 
 namespace squad_dma.Source.Squad
@@ -18,17 +17,7 @@ namespace squad_dma.Source.Squad
         protected DateTime _lastPointerUpdate = DateTime.MinValue;
         
         // Modules
-        private Suppression _suppression;
-        private InteractionDistances _interactionDistances;
-        private ShootingInMainBase _shootingInMainBase;
-        private SpeedHack _speedHack;
-        private Collision _collision;
-        private AirStuck _airStuck;
-        private HideActor _hideActor;
         private QuickZoom _quickZoom;
-        private RapidFire _rapidFire;
-        private InfiniteAmmo _infiniteAmmo;
-        private QuickSwap _quickSwap;
 
         /// <summary>
         /// Constructor for feature classes that inherit from Manager
@@ -72,7 +61,7 @@ namespace squad_dma.Source.Squad
                     return;
                     
                 if (!_inGame || _playerController == 0) return;
-                
+                /*
                 _cachedPlayerState = Memory.ReadPtr(_playerController + Controller.PlayerState);
                 if (_cachedPlayerState == 0) return;
                 
@@ -88,6 +77,7 @@ namespace squad_dma.Source.Squad
                 _cachedCharacterMovement = Memory.ReadPtr(_cachedSoldierActor + Character.CharacterMovement);
                 
                 _lastPointerUpdate = DateTime.Now;
+                */
             }
             catch
             {
@@ -102,17 +92,7 @@ namespace squad_dma.Source.Squad
         
         private void InitializeFeatures()
         {
-            _suppression = new Suppression(_playerController, _inGame);
-            _interactionDistances = new InteractionDistances(_playerController, _inGame);
-            _shootingInMainBase = new ShootingInMainBase(_playerController, _inGame);
-            _speedHack = new SpeedHack(_playerController, _inGame);
-            _collision = new Collision(_playerController, _inGame);
-            _airStuck = new AirStuck(_playerController, _inGame, _collision);
-            _hideActor = new HideActor(_playerController, _inGame);
             _quickZoom = new QuickZoom(_playerController, _inGame);
-            _rapidFire = new RapidFire(_playerController, _inGame);
-            _infiniteAmmo = new InfiniteAmmo(_playerController, _inGame);
-            _quickSwap = new QuickSwap(_playerController, _inGame);
         }
         
         /// <summary>
@@ -128,7 +108,7 @@ namespace squad_dma.Source.Squad
                 ulong playerState = _cachedPlayerState != 0 ? _cachedPlayerState : Memory.ReadPtr(_playerController + Controller.PlayerState);
                 if (playerState == 0) return false;
                 
-                ulong soldierActor = _cachedSoldierActor != 0 ? _cachedSoldierActor : Memory.ReadPtr(playerState + ASQPlayerState.Soldier);
+                ulong soldierActor = _cachedSoldierActor != 0 ? _cachedSoldierActor : Memory.ReadPtr(playerState + Controller.Pawn);
                 if (soldierActor == 0) return false;
                 
                 return true;
@@ -150,33 +130,6 @@ namespace squad_dma.Source.Squad
                     {
                         UpdateCachedPointers();
 
-                        if (_suppression._isSuppressionEnabled)
-                            _suppression.Apply();
-                        if (_interactionDistances._isInteractionDistancesEnabled)
-                            _interactionDistances.Apply();
-                        if (_shootingInMainBase._isShootingInMainBaseEnabled)
-                            _shootingInMainBase.Apply();
-                        if (_speedHack._isSpeedHackEnabled)
-                            _speedHack.Apply();
-                        if (_airStuck._isAirStuckEnabled)
-                            _airStuck.Apply();
-                        
-                        // Handle DisableCollision, ensuring it's disabled if AirStuck is disabled
-                        if (!_airStuck._isAirStuckEnabled && _collision.IsCollisionDisabled)
-                        {
-                            _collision.SetEnabled(false);
-                        }
-                        
-                        if (_collision.IsCollisionDisabled)
-                            _collision.Apply();
-                        if (_hideActor._isHideActorEnabled)
-                            _hideActor.Apply();
-                        if (_rapidFire._isRapidFireEnabled)
-                            _rapidFire.Apply();
-                        if (_infiniteAmmo._isInfiniteAmmoEnabled)
-                            _infiniteAmmo.Apply();
-                        if (_quickSwap._isQuickSwapEnabled)
-                            _quickSwap.Apply();
                     }
                     catch { /* Silently fail */ }
                     await Task.Delay(1000, _cancellationTokenSource.Token);
@@ -191,73 +144,11 @@ namespace squad_dma.Source.Squad
         
         #region Feature Control Methods
         
-        public void SetSuppression(bool enable)
-        {
-            _suppression.SetEnabled(enable);
-        }
-        
-        public void SetInteractionDistances(bool enable)
-        {
-            _interactionDistances.SetEnabled(enable);
-        }
-        
-        public void SetShootingInMainBase(bool enable)
-        {
-            _shootingInMainBase.SetEnabled(enable);
-        }
-        
-        public void SetSpeedHack(bool enable)
-        {
-            _speedHack.SetEnabled(enable);
-        }
-        
-        public void SetAirStuck(bool enable)
-        {
-            _airStuck.SetEnabled(enable);
-            
-            // If AirStuck is disabled, also disable collision
-            if (!enable && _collision.IsCollisionDisabled)
-            {
-                _collision.SetEnabled(false);
-            }
-        }
-        
         public void SetQuickZoom(bool enable)
         {
             _quickZoom.SetEnabled(enable);
         }
-        
-        public void SetHideActor(bool enable)
-        {
-            _hideActor.SetEnabled(enable);
-        }
-        
-        public void DisableCollision(bool disable)
-        {
-            // Only allow enabling if AirStuck is enabled
-            if (disable && !_airStuck._isAirStuckEnabled)
-            {
-                return;
-            }
-            
-            _collision.SetEnabled(disable);
-        }
-        
-        public void SetRapidFire(bool enable)
-        {
-            _rapidFire.SetEnabled(enable);
-        }
-        
-        public void SetInfiniteAmmo(bool enable)
-        {
-            _infiniteAmmo.SetEnabled(enable);
-        }
-        
-        public void SetQuickSwap(bool enable)
-        {
-            _quickSwap.SetEnabled(enable);
-        }
-        
+
         public void Dispose()
         {
             if (_cancellationTokenSource != null)

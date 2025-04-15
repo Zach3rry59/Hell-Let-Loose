@@ -40,6 +40,11 @@
 		</Content>
 	</ItemGroup>
 
+
+	<ItemGroup>
+	  <None Remove="Source\Squad\RegisteredActors.cs~RF9e190d9.TMP" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="DarkModeForms.imerzan" Version="1.0.1" />
 		<PackageReference Include="MaterialSkin.2" Version="2.3.1" />

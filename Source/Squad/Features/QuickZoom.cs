@@ -31,12 +31,12 @@ namespace squad_dma.Source.Squad.Features
                 
                 if (_isQuickZoomEnabled)
                 {
-                    _originalFov = Memory.ReadValue<float>(cameraManager + PlayerCameraManager.DefaultFOV);
-                    Memory.WriteValue<float>(cameraManager + PlayerCameraManager.DefaultFOV, 20.0f);
+                    _originalFov = Memory.ReadValue<float>(cameraManager + Offsets.Camera.DefaultFOV);
+                    Memory.WriteValue<float>(cameraManager + Offsets.Camera.DefaultFOV, 20.0f);
                 }
                 else if (_originalFov != 0.0f)
                 {
-                    Memory.WriteValue<float>(cameraManager + PlayerCameraManager.DefaultFOV, _originalFov);
+                    Memory.WriteValue<float>(cameraManager + Offsets.Camera.DefaultFOV, _originalFov);
                     _originalFov = 0.0f;
                 }
             }

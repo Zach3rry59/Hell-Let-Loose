@@ -163,14 +163,6 @@ namespace squad_dma
             _mapCanvas.MouseDoubleClick += skMapCanvas_MouseDoubleClick;
             _mapCanvas.MouseUp += skMapCanvas_MouseUp;
             tabControl.SelectedIndexChanged += TabControl_SelectedIndexChanged;
-
-            // Add Local Soldier feature event handlers
-            chkDisableSuppression.CheckedChanged += ChkDisableSuppression_CheckedChanged;
-            chkSetInteractionDistances.CheckedChanged += ChkSetInteractionDistances_CheckedChanged;
-            chkAllowShootingInMainBase.CheckedChanged += ChkAllowShootingInMainBase_CheckedChanged;
-            chkSpeedHack.CheckedChanged += ChkSetTimeDilation_CheckedChanged;
-            chkAirStuck.CheckedChanged += ChkAirStuck_CheckedChanged;
-            chkHideActor.CheckedChanged += ChkHideActor_CheckedChanged;
         }
 
         private void LoadInitialData()
@@ -203,35 +195,8 @@ namespace squad_dma
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == _config.KeybindSpeedHack && chkSpeedHack.Checked)
-            {
-                _config.SetSpeedHack = !_config.SetSpeedHack;
-                Memory._game?.SetSpeedHack(_config.SetSpeedHack);
-                UpdateStatusIndicator(lblStatusSpeedHack, _config.SetSpeedHack);
-                return true;
-            }
-            else if (keyData == _config.KeybindAirStuck && chkAirStuck.Checked)
-            {
-                _config.SetAirStuck = !_config.SetAirStuck;
-                Memory._game?.SetAirStuck(_config.SetAirStuck);
-                UpdateStatusIndicator(lblStatusAirStuck, _config.SetAirStuck);
-                if (chkDisableCollision.Checked)
-                {
-                    _config.DisableCollision = _config.SetAirStuck;
-                    Memory._game?.DisableCollision(_config.DisableCollision);
-                }
-
-                Config.SaveConfig(_config);
-                return true;
-            }
-            else if (keyData == _config.KeybindHideActor && chkHideActor.Checked)
-            {
-                _config.SetHideActor = !_config.SetHideActor;
-                Memory._game?.SetHideActor(_config.SetHideActor);
-                UpdateStatusIndicator(lblStatusHideActor, _config.SetHideActor);
-                return true;
-            }
-            else if (keyData == _config.KeybindToggleEnemyDistance)
+            
+            if (keyData == _config.KeybindToggleEnemyDistance)
             {
                 ToggleEnemyDistance();
                 return true;
@@ -301,41 +266,12 @@ namespace squad_dma
         private void InitializeKeybinds()
         {
             chkDisableSuppression.Checked = _config.DisableSuppression;
-            chkDisableSuppression.CheckedChanged += ChkDisableSuppression_CheckedChanged;
-
-            chkSetInteractionDistances.Checked = _config.SetInteractionDistances;
-            chkSetInteractionDistances.CheckedChanged += ChkSetInteractionDistances_CheckedChanged;
-
-            chkAllowShootingInMainBase.Checked = _config.AllowShootingInMainBase;
-            chkAllowShootingInMainBase.CheckedChanged += ChkAllowShootingInMainBase_CheckedChanged;
-
-            chkSpeedHack.Checked = _config.SetSpeedHack;
-            chkSpeedHack.CheckedChanged += ChkSetTimeDilation_CheckedChanged;
-
-            chkAirStuck.Checked = _config.SetAirStuck;
-            chkAirStuck.CheckedChanged += ChkAirStuck_CheckedChanged;
-
-            chkDisableCollision.Checked = _config.DisableCollision;
-            chkDisableCollision.Enabled = _config.SetAirStuck; // Only enable if AirStuck is checked
-            chkDisableCollision.CheckedChanged += ChkDisableCollision_CheckedChanged;
-
-            chkHideActor.Checked = _config.SetHideActor;
-            chkHideActor.CheckedChanged += ChkHideActor_CheckedChanged;
 
             chkQuickZoom.Checked = _config.QuickZoom;
             chkQuickZoom.CheckedChanged += ChkQuickZoom_CheckedChanged;
 
-            chkRapidFire.Checked = _config.RapidFire;
-            chkRapidFire.CheckedChanged += ChkRapidFire_CheckedChanged;
-
             chkShowEnemyDistance.Checked = _config.ShowEnemyDistance;
             chkShowEnemyDistance.CheckedChanged += ChkShowEnemyDistance_CheckedChanged;
-
-            chkInfiniteAmmo.Checked = _config.InfiniteAmmo;
-            chkInfiniteAmmo.CheckedChanged += ChkInfiniteAmmo_CheckedChanged;
-
-            chkQuickSwap.Checked = _config.QuickSwap;
-            chkQuickSwap.CheckedChanged += ChkQuickSwap_CheckedChanged;
 
             // Keybind buttons
             btnKeybindSpeedHack.Text = _config.KeybindSpeedHack == Keys.None ? "None" : _config.KeybindSpeedHack.ToString();
@@ -390,36 +326,6 @@ namespace squad_dma
                 ZoomIn(_config.ZoomStep);
             else if (InputManager.IsKeyDown(_config.KeybindZoomOut))
                 ZoomOut(_config.ZoomStep);
-
-            // Handle feature toggles with keybinds
-            if (InputManager.IsKeyPressed(_config.KeybindSpeedHack) && chkSpeedHack.Checked)
-            {
-                _config.SetSpeedHack = !_config.SetSpeedHack;
-                Memory._game?.SetSpeedHack(_config.SetSpeedHack);
-                Config.SaveConfig(_config);
-                UpdateStatusIndicator(lblStatusSpeedHack, _config.SetSpeedHack);
-            }
-            if (InputManager.IsKeyPressed(_config.KeybindAirStuck) && chkAirStuck.Checked)
-            {
-                _config.SetAirStuck = !_config.SetAirStuck;
-                Memory._game?.SetAirStuck(_config.SetAirStuck);
-                UpdateStatusIndicator(lblStatusAirStuck, _config.SetAirStuck);
-
-                // If DisableCollision is checked, toggle it along with AirStuck
-                if (chkDisableCollision.Checked)
-                {
-                    _config.DisableCollision = _config.SetAirStuck;
-                    Memory._game?.DisableCollision(_config.DisableCollision);
-                }
-            }
-            if (InputManager.IsKeyPressed(_config.KeybindHideActor) && chkHideActor.Checked)
-            {
-                _config.SetHideActor = !_config.SetHideActor;
-                Memory._game?.SetHideActor(_config.SetHideActor);
-                Config.SaveConfig(_config);
-                UpdateStatusIndicator(lblStatusHideActor, _config.SetHideActor);
-            }
-
             // Handle other keybinds
             if (InputManager.IsKeyPressed(_config.KeybindToggleEnemyDistance))
             {
@@ -924,38 +830,8 @@ namespace squad_dma
             {
                 if (Memory._game != null)
                 {
-                    await Task.Delay(1000); 
-                    
-                    if (_config.DisableSuppression)
-                        Memory._game?.SetSuppression(true);
-                    
-                    if (_config.SetInteractionDistances)
-                        Memory._game?.SetInteractionDistances(true);
-                    
-                    if (_config.AllowShootingInMainBase)
-                        Memory._game?.SetShootingInMainBase(true);
-                    
-                    if (_config.SetSpeedHack)
-                        Memory._game?.SetSpeedHack(true);
-                    
-                    if (_config.SetAirStuck)
-                        Memory._game?.SetAirStuck(true);
-                    
-                    if (_config.SetHideActor)
-                        Memory._game?.SetHideActor(true);
-                        
-                    if (_config.RapidFire)
-                        Memory._game?.SetRapidFire(true);
-                        
-                    if (_config.InfiniteAmmo)
-                        Memory._game?.SetInfiniteAmmo(true);
-                        
-                    if (_config.QuickSwap)
-                        Memory._game?.SetQuickSwap(true);
-                        
-                    if (_config.DisableCollision)
-                        Memory._game?.DisableCollision(true);
-                        
+                    await Task.Delay(1000);
+                    // todo: Apply features here
                     break;
                 }
                 await Task.Delay(500);
@@ -984,7 +860,7 @@ namespace squad_dma
 
                     this.Invoke((MethodInvoker)delegate
                     {
-                        this.Text = $"Squad DMA ({fps} fps)";
+                        this.Text = $"HLL DMA ({fps} fps)";
                     });
 
                     _fpsWatch.Restart();
@@ -1002,24 +878,24 @@ namespace squad_dma
             if (Memory.GameStatus != GameStatus.InGame || Memory._game == null)
                 return;
 
-            var gameTickets = Memory._game.GameTickets;
+            var gameTickets = 0;
             int friendly = 0;
             int enemy = 0;
 
             if (gameTickets != null)
             {
-                friendly = gameTickets.FriendlyTickets;
-                enemy = gameTickets.EnemyTickets;
+                friendly = 0;
+                enemy = 0;
             }
 
-            var gameStats = Memory._game.GameStats;
+            var gameStats = 0;
             int kills = 0;
             int woundeds = 0;
 
             if (gameStats != null)
             {
-                kills = gameStats.Kills;
-                woundeds = gameStats.Woundeds;
+                kills = 0;
+                woundeds = 0;
             }
 
             if (friendly != _lastFriendlyTickets ||
@@ -1904,7 +1780,7 @@ namespace squad_dma
         {
             if (!InGame) return false;
 
-            Memory._game.LogVehicles(force: true);
+            //Memory._game.LogVehicles(force: true);
             return true;
         }
 
@@ -1912,7 +1788,7 @@ namespace squad_dma
         {
             if (!InGame) return;
 
-            Memory._game.LogVehicles(force: true);
+           // Memory._game.LogVehicles(force: true);
         }
 
         private void ChkShowEnemyDistance_CheckedChanged(object sender, EventArgs e)
@@ -1944,106 +1820,9 @@ namespace squad_dma
             Config.SaveConfig(_config);
         }
 
-        private void ChkDisableSuppression_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!InGame) return;
-
-            _config.DisableSuppression = chkDisableSuppression.Checked;
-            Memory._game?.SetSuppression(chkDisableSuppression.Checked);
-            Config.SaveConfig(_config);
-        }
-
-        private void ChkSetInteractionDistances_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!InGame) return;
-            _config.SetInteractionDistances = chkSetInteractionDistances.Checked;
-            Memory._game?.SetInteractionDistances(_config.SetInteractionDistances);
-            Config.SaveConfig(_config);
-        }
-
-        private void ChkAllowShootingInMainBase_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!InGame) return;
-            _config.AllowShootingInMainBase = chkAllowShootingInMainBase.Checked;
-            Memory._game?.SetShootingInMainBase(_config.AllowShootingInMainBase);
-            Config.SaveConfig(_config);
-        }
-
-        private void ChkSetTimeDilation_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!InGame) return;
-            if (!chkSpeedHack.Checked)
-            {
-                _config.SetSpeedHack = false;
-                Memory._game?.SetSpeedHack(false);
-                UpdateStatusIndicator(lblStatusSpeedHack, false);
-            }
-            Config.SaveConfig(_config);
-        }
-
-        private void ChkAirStuck_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!InGame) return;
-            
-            _config.SetAirStuck = chkAirStuck.Checked;
-            
-            chkDisableCollision.Enabled = chkAirStuck.Checked;
-            if (!chkAirStuck.Checked && chkDisableCollision.Checked)
-            {
-                chkDisableCollision.Checked = false;
-                _config.DisableCollision = false;
-            }
-
-            Config.SaveConfig(_config);
-        }
-
-        private void ChkDisableCollision_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!InGame) return;
-            if (chkDisableCollision.Checked && !chkAirStuck.Checked)
-            {
-                chkDisableCollision.Checked = false;
-                return;
-            }
-            _config.DisableCollision = chkDisableCollision.Checked;
-            Config.SaveConfig(_config);
-        }
-
-        private void ChkHideActor_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!InGame) return;
-            if (!chkHideActor.Checked)
-            {
-                _config.SetHideActor = false;
-                Memory._game?.SetHideActor(false);
-                UpdateStatusIndicator(lblStatusHideActor, false);
-            }
-            Config.SaveConfig(_config);
-        }
         private void ChkQuickZoom_CheckedChanged(object sender, EventArgs e)
         {
             _config.QuickZoom = chkQuickZoom.Checked;
-            Config.SaveConfig(_config);
-        }
-
-        private void ChkRapidFire_CheckedChanged(object sender, EventArgs e)
-        {
-            _config.RapidFire = chkRapidFire.Checked;
-            Memory._game?.SetRapidFire(_config.RapidFire);
-            Config.SaveConfig(_config);
-        }
-
-        private void ChkInfiniteAmmo_CheckedChanged(object sender, EventArgs e)
-        {
-            _config.InfiniteAmmo = chkInfiniteAmmo.Checked;
-            Memory._game?.SetInfiniteAmmo(_config.InfiniteAmmo);
-            Config.SaveConfig(_config);
-        }
-
-        private void ChkQuickSwap_CheckedChanged(object sender, EventArgs e)
-        {
-            _config.QuickSwap = chkQuickSwap.Checked;
-            Memory._game?.SetQuickSwap(_config.QuickSwap);
             Config.SaveConfig(_config);
         }
         #endregion

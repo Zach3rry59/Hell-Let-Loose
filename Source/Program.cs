@@ -48,7 +48,7 @@ namespace squad_dma {
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Squad Radar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.ToString(), "HLL Radar", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         #endregion

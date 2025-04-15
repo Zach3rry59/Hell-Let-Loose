@@ -159,7 +159,7 @@ namespace squad_dma
             try
             {
                 ThrowIfDMAShutdown();
-                _process = vmmInstance.Process("SquadGame.exe");
+                _process = vmmInstance.Process("HLL-Win64-Shipping.exe");
 
                 if (_process is null)
                     throw new DMAException("Unable to obtain PID. Game is not running.");
@@ -184,7 +184,7 @@ namespace squad_dma
             try
             {
                 ThrowIfDMAShutdown();
-                _squadBase = _process.GetModuleBase("SquadGame.exe");
+                _squadBase = _process.GetModuleBase("HLL-Win64-Shipping.exe");
                 if (_squadBase == 0) throw new DMAException("Unable to obtain Base Module Address. Game may not be running");
                 // else
                 // {
