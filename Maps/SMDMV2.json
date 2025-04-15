@@ -1,12 +1,12 @@
 {
-  "mapID": ["Remagen"],
-  "x": 1920,
-  "y": 1920,
-  "scale": 0.012,
-  "mapLayers": [
-    {
-      "minHeight": -30000,
-      "filename": "Maps\\Remagen.png"
-    }
-  ]
+    "mapID": [ "Remagen" ],
+    "x": 1225,
+    "y": 1225,
+    "scale": 0.0096,
+    "mapLayers": [
+        {
+            "minHeight": -30000,
+            "filename": "Maps\\Remagen.png"
+        }
+    ]
 }
