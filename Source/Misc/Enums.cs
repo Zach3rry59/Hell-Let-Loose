@@ -18,6 +18,7 @@ namespace squad_dma {
         DeployableHMG,
         DeployableMortars,
         DeployableRockets,
+        DeployableRepairStation,
         Drone,
         IFV,
         JeepAntiAir,

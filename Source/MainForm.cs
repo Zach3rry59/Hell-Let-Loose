@@ -1100,6 +1100,8 @@ namespace squad_dma
             var mapParams = GetMapLocation();
             var localPlayerZoomedPos = localPlayerMapPos.ToZoomedPos(mapParams);
 
+            Program.Log($"AbsoluteLocation = {AbsoluteLocation} LocalPlayer: pos =({localPlayerPos.X}, {localPlayerPos.Y}), MapPos=({localPlayerMapPos.X}, {localPlayerMapPos.Y}), ZoomedPos=({localPlayerZoomedPos.X}, {localPlayerZoomedPos.Y})");
+
             localPlayerZoomedPos.DrawPlayerMarker(canvas, LocalPlayer, trkAimLength.Value);
 
             foreach (var actor in allPlayers)

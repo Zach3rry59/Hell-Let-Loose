@@ -222,11 +222,9 @@ public bool InGame => _inGame;
                 }
                 Program.Log($"FText.TextData Address: 0x{textDataPtr:X}");
 
-                // Read FText SourceString (assuming Unreal Engine 4/5 FText layout)
-                // FText often has a TSharedPtr<FString> for SourceString, typically at offset 0x18 or 0x20
-                var sourceStringAddr = textDataPtr + 0x28; // Adjust based on engine version
+                var sourceStringAddr = textDataPtr + 0x28;
                 var stringPtr = Memory.ReadPtr(sourceStringAddr);
-                var stringLength = Memory.ReadValue<int>(sourceStringAddr + 0x8); // Length typically follows pointer
+                var stringLength = Memory.ReadValue<int>(sourceStringAddr + 0x8);
                 Program.Log($"SourceString Address: 0x{stringPtr:X}, Length: {stringLength}");
 
                 if (!IsValidPointer(stringPtr) || stringLength <= 0 || stringLength > 1024)
@@ -235,7 +233,6 @@ public bool InGame => _inGame;
                     return "Unknown";
                 }
 
-                // Read the string (UTF-16 encoding)
                 var mapName = Memory.ReadString(stringPtr, (uint)(stringLength * 2), true);
                 if (string.IsNullOrEmpty(mapName) || mapName.Length < 3 || !IsValidMapName(mapName))
                 {
@@ -253,14 +250,11 @@ public bool InGame => _inGame;
             }
         }
 
-        // Helper method to validate pointers
         private bool IsValidPointer(ulong ptr)
         {
-            // Basic check for null or unrealistic addresses
             return ptr != 0 && ptr > 0x10000 && ptr < 0x7FFFFFFFFFFF;
         }
 
-        // Helper method to validate map name
         private bool IsValidMapName(string name)
         {
             return name.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c) || c == '_' || c == '-');
@@ -349,6 +343,7 @@ public bool InGame => _inGame;
                 if (_playerController == 0 || _gameWorld == 0)
                 {
                     Program.Log("GetCameraCache: PlayerController or GameWorld is null");
+                    this._inGame = false;
                     return false;
                 }
 
@@ -405,6 +400,7 @@ public bool InGame => _inGame;
                         y + _absoluteLocation.Y,
                         z + _absoluteLocation.Z
                     );
+                    
                 }
                 else
                 {
