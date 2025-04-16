@@ -336,6 +336,53 @@ public bool InGame => _inGame;
             }
         }
 
+        private void TestWorldOriginOffsets()
+        {
+            try
+            {
+                if (_gameWorld == 0)
+                {
+                    Program.Log("TestWorldOriginOffsets: GameWorld is null");
+                    return;
+                }
+                Program.Log($"START TRYING OFFSETS : ");
+                var scatterMap = new ScatterReadMap(1);
+                var round = scatterMap.AddRound();
+
+                
+                int entryIndex = 0;
+                for (uint offset = 0x220; offset <= 0x55C; offset += 2)
+                {
+                    round.AddEntry<float>(0, entryIndex++, _gameWorld + offset);
+                    round.AddEntry<float>(0, entryIndex++, _gameWorld + offset + 0x4);
+                    round.AddEntry<float>(0, entryIndex++, _gameWorld + offset + 0x8);
+                }
+
+                scatterMap.Execute();
+
+                entryIndex = 0;
+                for (uint offset = 0x220; offset <= 0x55C; offset += 2)
+                {
+                    if (scatterMap.Results[0][entryIndex].TryGetResult<float>(out var x) &&
+                        scatterMap.Results[0][entryIndex + 1].TryGetResult<float>(out var y) &&
+                        scatterMap.Results[0][entryIndex + 2].TryGetResult<float>(out var z))
+                    {
+                        Program.Log($"WorldOrigin@0x{offset:X3}=({x}, {y}, {z})");
+                    }
+                    else
+                    {
+                        Program.Log($"WorldOrigin@0x{offset:X3}=Failed to read");
+                    }
+                    entryIndex += 3;
+                }
+                Thread.Sleep(2000);
+            }
+            catch (Exception ex)
+            {
+                Program.Log($"TestWorldOriginOffsets: Error - {ex.Message}");
+            }
+        }
+
         private bool GetCameraCache()
         {
             try
@@ -384,6 +431,7 @@ public bool InGame => _inGame;
                     cameraInfoScatterMap.Results[0][13].TryGetResult<float>(out var absoluteZ))
                 {
                     _absoluteLocation = new Vector3(absoluteX, absoluteY, absoluteZ);
+                    Program.Log($"GetCameraCache: WorldOrigin=({absoluteX}, {absoluteY}, {absoluteZ})");
                 }
                 else
                 {
