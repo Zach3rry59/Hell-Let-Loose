@@ -431,7 +431,7 @@ public bool InGame => _inGame;
                     cameraInfoScatterMap.Results[0][13].TryGetResult<float>(out var absoluteZ))
                 {
                     _absoluteLocation = new Vector3(absoluteX, absoluteY, absoluteZ);
-                    Program.Log($"GetCameraCache: WorldOrigin=({absoluteX}, {absoluteY}, {absoluteZ})");
+                    //Program.Log($"GetCameraCache: WorldOrigin=({absoluteX}, {absoluteY}, {absoluteZ})");
                 }
                 else
                 {
@@ -443,6 +443,7 @@ public bool InGame => _inGame;
                     viewInfoScatterMap.Results[0][15].TryGetResult<float>(out var y) &&
                     viewInfoScatterMap.Results[0][16].TryGetResult<float>(out var z))
                 {
+                    Program.Log($"GetCameraCache: CameraLocation=({x}, {y}, {z})");
                     _localUPlayer.Position = new Vector3(
                         x + _absoluteLocation.X,
                         y + _absoluteLocation.Y,
