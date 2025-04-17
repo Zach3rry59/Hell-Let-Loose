@@ -1,12 +1,12 @@
 {
-    "mapID": [ "Mortain", "MORTAIN" ],
-    "x": 960,
-    "y": 960,
-    "scale": 0.0096,
-    "mapLayers": [
-        {
-            "minHeight": -30000,
-            "filename": "Maps\\Mortain.png"
-        }
-    ]
+  "mapID": ["Mortain", "MORTAIN"],
+  "x": 960,
+  "y": 960,
+  "scale": 0.009666,
+  "mapLayers": [
+    {
+      "minHeight": -30000,
+      "filename": "Maps\\Mortain.png"
+    }
+  ]
 }

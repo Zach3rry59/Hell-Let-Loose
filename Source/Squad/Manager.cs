@@ -18,6 +18,8 @@ namespace squad_dma.Source.Squad
         
         // Modules
         private QuickZoom _quickZoom;
+        private Suppression _suppression;
+        private NoRecoil _noRecoil;
 
         /// <summary>
         /// Constructor for feature classes that inherit from Manager
@@ -61,23 +63,18 @@ namespace squad_dma.Source.Squad
                     return;
                     
                 if (!_inGame || _playerController == 0) return;
-                /*
                 _cachedPlayerState = Memory.ReadPtr(_playerController + Controller.PlayerState);
                 if (_cachedPlayerState == 0) return;
                 
-                _cachedSoldierActor = Memory.ReadPtr(_cachedPlayerState + ASQPlayerState.Soldier);
+                _cachedSoldierActor = Memory.ReadPtr(_playerController + Controller.Character);
                 if (_cachedSoldierActor == 0) return;
                 
-                _cachedInventoryComponent = Memory.ReadPtr(_cachedSoldierActor + ASQSoldier.InventoryComponent);
-                if (_cachedInventoryComponent != 0)
-                {
-                    _cachedCurrentWeapon = Memory.ReadPtr(_cachedInventoryComponent + USQPawnInventoryComponent.CurrentWeapon);
-                }
-                
+                _cachedInventoryComponent = Memory.ReadPtr(_cachedSoldierActor + AShooterCharacter.Inventory);
+
+                _cachedCurrentWeapon = Memory.ReadPtr(_cachedSoldierActor + AShooterCharacter.CurrentWeapon);
                 _cachedCharacterMovement = Memory.ReadPtr(_cachedSoldierActor + Character.CharacterMovement);
                 
                 _lastPointerUpdate = DateTime.Now;
-                */
             }
             catch
             {
@@ -93,8 +90,11 @@ namespace squad_dma.Source.Squad
         private void InitializeFeatures()
         {
             _quickZoom = new QuickZoom(_playerController, _inGame);
+
+            _noRecoil = new NoRecoil(_playerController, _inGame);
+            _suppression = new Suppression(_playerController, _inGame);
         }
-        
+
         /// <summary>
         /// Checks if the local player is valid (has a valid player state and soldier actor)
         /// </summary>
@@ -103,20 +103,32 @@ namespace squad_dma.Source.Squad
         {
             try
             {
-                if (!_inGame || _playerController == 0) return false;
-                
+                if (!_inGame || _playerController == 0)
+                {
+                    return false;
+                }
+
                 ulong playerState = _cachedPlayerState != 0 ? _cachedPlayerState : Memory.ReadPtr(_playerController + Controller.PlayerState);
-                if (playerState == 0) return false;
-                
+                if (playerState == 0)
+                {
+                    return false;
+                }
+
                 ulong soldierActor = _cachedSoldierActor != 0 ? _cachedSoldierActor : Memory.ReadPtr(playerState + Controller.Pawn);
-                if (soldierActor == 0) return false;
-                
+                if (soldierActor == 0)
+                {
+                    return false;
+                }
+
                 return true;
             }
-            catch
-            { return false; }
+            catch (Exception ex)
+            {
+                Program.Log($"IsLocalPlayerValid: Exception - {ex.Message}");
+                return false;
+            }
         }
-        
+
         // Start a timer to apply features every second
         // Simple fix for when the Localplayer respawns
         // Need to change it to a better solution
@@ -129,6 +141,20 @@ namespace squad_dma.Source.Squad
                     try
                     {
                         UpdateCachedPointers();
+
+                        if (_suppression._isSuppressionEnabled)
+                        {
+                            _suppression.Apply();
+                        }
+                        if (_noRecoil._isNoRecoilEnabled)
+                        {
+                            _noRecoil.Apply();
+                        }
+
+                        if (_quickZoom._isQuickZoomEnabled)
+                        {
+                            _quickZoom.Apply();
+                        }
 
                     }
                     catch { /* Silently fail */ }
@@ -147,6 +173,14 @@ namespace squad_dma.Source.Squad
         public void SetQuickZoom(bool enable)
         {
             _quickZoom.SetEnabled(enable);
+        }
+        public void SetNoRecoil(bool enable)
+        {
+            _noRecoil.SetEnabled(enable);
+        }
+        public void SetNoSuppression(bool enable)
+        {
+            _suppression.SetEnabled(enable);
         }
 
         public void Dispose()

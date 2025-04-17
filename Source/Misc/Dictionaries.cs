@@ -25,6 +25,7 @@ namespace squad_dma {
 
 
             {"BP_Puma_C", ActorType.IFV },
+            {"BP_PanzerIV_NA_C", ActorType.TankMGS },
             {"BP_Tiger_NA_C", ActorType.Tank },
             {"BP_Luchs_NA_C", ActorType.TrackedIFV },
             {"BP_Puma_NA_C", ActorType.IFV },

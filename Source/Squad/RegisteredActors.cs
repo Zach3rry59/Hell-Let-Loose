@@ -30,11 +30,16 @@ namespace squad_dma
         {
             get
             {
-                const int maxAttempts = 5;
+                const int maxAttempts = 3;
                 for (int attempt = 0; attempt < maxAttempts; attempt++)
                 {
                     try
                     {
+                        if (_persistentLevel == 0)
+                        {
+                            Program.Log("Skipping ActorCount read: Game state not ready.");
+                            return -1;
+                        }
                         var count = Memory.ReadValue<int>(_persistentLevel + Offsets.Level.MaxPacket);
                         if (count < 1)
                         {
@@ -49,8 +54,13 @@ namespace squad_dma
                     }
                     catch (Exception ex) when (attempt < maxAttempts - 1)
                     {
+                        if (ex.InnerException is ArgumentOutOfRangeException)
+                        {
+                            Program.Log($"CRITICAL - Invalid memory address for ActorCount: {ex}");
+                            return -1;
+                        }
                         Program.Log($"ERROR - PlayerCount attempt {attempt + 1} failed: {ex}");
-                        Thread.Sleep(1000);
+                        Thread.Sleep(700);
                     }
                 }
                 return -1;
@@ -156,7 +166,7 @@ namespace squad_dma
                     {
                         actorName = "Unknown";
                     }
-                    Program.Log($"UpdateList: Actor 0x{item.Key:X}, NameId={item.Value}, Name={actorName}");
+                    //Program.Log($"UpdateList: Actor 0x{item.Key:X}, NameId={item.Value}, Name={actorName}");
                 }
 
                 var playersNameIDs = names.Where(x => x.Value.Contains("PlayerPawn") || Names.TechNames.ContainsKey(x.Value)).ToDictionary();
@@ -271,6 +281,8 @@ namespace squad_dma
                         //TeamID PlatoonIndex
                         teamInfoRound.AddEntry<byte>(i, 9, pawnPlayerState, null, Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlayerTeam);
                         teamInfoRound.AddEntry<int>(i, 10, pawnPlayerState, null, Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlatoonIndex);
+                        teamInfoRound.AddEntry<ulong>(i, 16, pawnPlayerState, null, 0x300);        // FString.Data
+                        teamInfoRound.AddEntry<int>(i, 17, pawnPlayerState, null, 0x300 + 8);
 
                         var meshPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 11, actorAddr + Offsets.AShooterCharacter.Mesh);
                         meshRound.AddEntry<FTransform>(i, 12, meshPtr, null, Offsets.USceneComponent.ComponentToWorld);
@@ -452,6 +464,30 @@ namespace squad_dma
                                 actor.BoneScreenPositions = new Vector2[boneIds.Length];
                                 Array.Clear(actor.BoneScreenPositions, 0, actor.BoneScreenPositions.Length);
                             }
+                            if (results.TryGetValue(16, out var dataPtrResult) && dataPtrResult.TryGetResult<ulong>(out var dataPtr) &&
+                                results.TryGetValue(17, out var numResult) && numResult.TryGetResult<int>(out var num))
+                            {
+                                if (dataPtr != 0 && num > 0)
+                                {
+                                    try
+                                    {
+                                        actor.PrivateName = Memory.ReadString(dataPtr, (uint)(num * 2), true);
+                                    }
+                                    catch
+                                    {
+                                        actor.PrivateName = string.Empty;
+                                    }
+                                }
+                                else
+                                {
+                                    actor.PrivateName = string.Empty;
+                                }
+                            }
+                            else
+                            {
+                                actor.PrivateName = string.Empty;
+                            }
+
                         }
 
                         else

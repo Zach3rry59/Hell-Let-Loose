@@ -180,7 +180,7 @@ namespace squad_dma
             this.Enabled = false;
 
             Program.Log("Closing form");
-            if (_espOverlay != null && !_espOverlay.IsDisposed)
+            if (_espOverlay != null)
             {
                 _espOverlay.Close();
                 _espOverlay = null;
@@ -269,6 +269,10 @@ namespace squad_dma
 
             chkQuickZoom.Checked = _config.QuickZoom;
             chkQuickZoom.CheckedChanged += ChkQuickZoom_CheckedChanged;
+            chkEnableNoRecoil.Checked = _config.NoRecoil;
+            chkEnableNoRecoil.CheckedChanged += ChkEnableNoRecoilCheckedChanged;
+            chkDisableSuppression.Checked = _config.DisableSuppression;
+            chkDisableSuppression.CheckedChanged += ChkDisableSuppressionCheckedChanged;
 
             chkShowEnemyDistance.Checked = _config.ShowEnemyDistance;
             chkShowEnemyDistance.CheckedChanged += ChkShowEnemyDistance_CheckedChanged;
@@ -831,7 +835,10 @@ namespace squad_dma
                 if (Memory._game != null)
                 {
                     await Task.Delay(1000);
-                    // todo: Apply features here
+                    if (_config.DisableSuppression)
+                        Memory._game?.SetNoSuppression(true);
+                    if (_config.NoRecoil)
+                        Memory._game?.SetNoRecoil(true);
                     break;
                 }
                 await Task.Delay(500);
@@ -1943,7 +1950,18 @@ namespace squad_dma
 
         private void ChkEnableNoRecoilCheckedChanged(object sender, EventArgs e)
         {
+            if (!InGame) return;
+            Memory._game?.SetNoRecoil(chkEnableNoRecoil.Checked);
             _config.NoRecoil = chkEnableNoRecoil.Checked;
+            Config.SaveConfig(_config);
+        }
+
+        private void ChkDisableSuppressionCheckedChanged(object sender, EventArgs e)
+        {
+            if (!InGame) return;
+
+            _config.DisableSuppression = chkDisableSuppression.Checked;
+            Memory._game?.SetNoSuppression(chkDisableSuppression.Checked);
             Config.SaveConfig(_config);
         }
 

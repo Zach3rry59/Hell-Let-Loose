@@ -4,7 +4,7 @@ namespace squad_dma.Source.Squad.Features
 {
     public class QuickZoom : Manager
     {
-        private bool _isQuickZoomEnabled = false;
+        public bool _isQuickZoomEnabled = false;
         private float _originalFov = 0.0f;
         
         public QuickZoom(ulong playerController, bool inGame)
@@ -32,6 +32,13 @@ namespace squad_dma.Source.Squad.Features
                 if (_isQuickZoomEnabled)
                 {
                     _originalFov = Memory.ReadValue<float>(cameraManager + Offsets.Camera.DefaultFOV);
+                    ulong UCameraAnimInst = Memory.ReadPtr(cameraManager + 0x2688);
+                    ulong UCameraAnim = Memory.ReadPtr(UCameraAnimInst + 0x28);
+
+                    Program.Log($"{Memory.ReadValue<float>(UCameraAnimInst + 0x50)}");
+                    Memory.WriteValue<float>(UCameraAnimInst + 0x50, 2000.0f);
+
+                    Program.Log($"QuickZoom.Apply: Set CameraCache FOV to 20f");
                     Memory.WriteValue<float>(cameraManager + Offsets.Camera.DefaultFOV, 20.0f);
                 }
                 else if (_originalFov != 0.0f)

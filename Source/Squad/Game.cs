@@ -57,6 +57,10 @@ public bool InGame => _inGame;
         
         public void SetQuickZoom(bool enable) => _soldierManager?.SetQuickZoom(enable);
 
+        public void SetNoRecoil(bool enable) => _soldierManager?.SetNoRecoil(enable);
+
+        public void SetNoSuppression(bool enable) => _soldierManager?.SetNoSuppression(enable);
+
         public void WaitForGame()
         {
             while (true)
@@ -126,6 +130,7 @@ public bool InGame => _inGame;
         #region Private Methods
         private void InitializeManagers()
         {
+            _soldierManager = new Source.Squad.Manager(_playerController, _inGame, _actors);
             // todo: Initialize all managers here
         }
 

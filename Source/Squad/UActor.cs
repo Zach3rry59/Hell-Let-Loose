@@ -15,6 +15,7 @@ namespace squad_dma
         #region PlayerProperties
         public uint NameId { get; set; }
         public string Name { get; set; }
+        public string PrivateName { get; set; }
         public float Health { get; set; } = -1;
         public float MaxHealth { get; set; } = -1;
         public int TeamID { get; set; } = -1;

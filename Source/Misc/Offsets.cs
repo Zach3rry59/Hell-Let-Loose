@@ -105,13 +105,45 @@
     }
     public static class AShooterCharacter
     {
-        public const int Health = 0x9d4;
-        public const int Mesh = 0x280;
+        public const int Health = 0x9d4; // float
+        public const int Mesh = 0x280; // USkeletalMeshComponent*
+        public const int CurrentWeapon = 0x5f0; // AShooterWeapon*
+        public const int Inventory = 0x8a0; // TArray<AShooterWeapon*>
+
+        public const int MaxSuppression = 0x8e8; // float
+        public const int SuppressionRecoveryRate = 0x8e0; // float
+    }
+    public static class AShooterWeapon
+    {
+
+        public const int RecoilAndSpread = 0x350; // FRecoilAndSpread
+        public const int RecoilAndSpread_ADS = 0x380; // FRecoilAndSpread
+        public const int RecoilAndSpreadState = 0x3b0; // FRecoilAndSpreadState
+    }
+
+    public static class FRecoilAndSpread
+    {
+        public const int Recoil = 0x0; // float
+        public const int DirectionBias = 0x4; // float
+        public const int VerticalScaleMin = 0x8; // float
+        public const int VerticalScaleMax = 0xc; // float
+        public const int HorizontalScaleMin = 0x10; // float
+        public const int HorizontalScaleMax = 0x14; // float
+        public const int RecoilCurve = 0x18; // URecoilCurve*
+        public const int RecoilIncrementTime = 0x20; // float
+        public const int BaseSpread = 0x24; // float
+        public const int AutoBloomIncrement = 0x28; // float
+        public const int AutoBloomMax = 0x2c; // float
+}
+    public static class Character
+    {
+        public const int CharacterMovement = 0x288; // UCharacterMovementComponent*
     }
 
     public static class APlayerState
     {
         public const int Pawn = 0x280; // APawn*
+        public const int PlayerNamePrivate = 0x300; // FString
     }
 
     public static class AShooterPlayerState
