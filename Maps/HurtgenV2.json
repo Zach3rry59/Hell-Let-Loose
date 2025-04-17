@@ -1,12 +1,12 @@
 {
-  "mapID": ["HurtgenV2", "HURTGENV2"],
-  "x": 1225,
-  "y": 1225,
-  "scale": 0.0096,
-  "mapLayers": [
-    {
-      "minHeight": -30000,
-      "filename": "Maps\\HurtgenV2.png"
-    }
-  ]
+    "mapID": [ "HurtgenV2", "HURTGENV2" ],
+    "x": 960,
+    "y": 960,
+    "scale": 0.0096,
+    "mapLayers": [
+        {
+            "minHeight": -30000,
+            "filename": "Maps\\HurtgenV2.png"
+        }
+    ]
 }

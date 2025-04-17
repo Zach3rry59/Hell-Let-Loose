@@ -183,7 +183,6 @@ public bool InGame => _inGame;
                 if (mapName == "MAIN MENU")
                 {
                     Memory.GameStatus = GameStatus.Menu;
-                    Memory.Restart();
                     return false;
                 }
                 else
@@ -207,40 +206,40 @@ public bool InGame => _inGame;
                 var mapLoadingDataAddr = Memory.ReadPtr(_gameInstance + Offsets.GameInstance.MapLoadingData);
                 if (!IsValidPointer(mapLoadingDataAddr))
                 {
-                    Program.Log("ERROR: MapLoadingData address is null or invalid");
+                   // Program.Log("ERROR: MapLoadingData address is null or invalid");
                     return "Unknown";
                 }
-                Program.Log($"MapLoadingData Address: 0x{mapLoadingDataAddr:X}");
+                //Program.Log($"MapLoadingData Address: 0x{mapLoadingDataAddr:X}");
 
                 // Read FText (MapName) pointer
                 var ftextAddr = mapLoadingDataAddr + Offsets.UMapLoadingScreenData.MapName;
                 var textDataPtr = Memory.ReadPtr(ftextAddr);
                 if (!IsValidPointer(textDataPtr))
                 {
-                    Program.Log("ERROR: FText.TextData is null or invalid");
+                    //Program.Log("ERROR: FText.TextData is null or invalid");
                     return "Unknown";
                 }
-                Program.Log($"FText.TextData Address: 0x{textDataPtr:X}");
+                //Program.Log($"FText.TextData Address: 0x{textDataPtr:X}");
 
                 var sourceStringAddr = textDataPtr + 0x28;
                 var stringPtr = Memory.ReadPtr(sourceStringAddr);
                 var stringLength = Memory.ReadValue<int>(sourceStringAddr + 0x8);
-                Program.Log($"SourceString Address: 0x{stringPtr:X}, Length: {stringLength}");
+               // Program.Log($"SourceString Address: 0x{stringPtr:X}, Length: {stringLength}");
 
                 if (!IsValidPointer(stringPtr) || stringLength <= 0 || stringLength > 1024)
                 {
-                    Program.Log($"ERROR: Invalid SourceString (ptr=0x{stringPtr:X}, length={stringLength})");
+                   // Program.Log($"ERROR: Invalid SourceString (ptr=0x{stringPtr:X}, length={stringLength})");
                     return "Unknown";
                 }
 
                 var mapName = Memory.ReadString(stringPtr, (uint)(stringLength * 2), true);
                 if (string.IsNullOrEmpty(mapName) || mapName.Length < 3 || !IsValidMapName(mapName))
                 {
-                    Program.Log($"ERROR: Invalid map name: {mapName}");
+                   // Program.Log($"ERROR: Invalid map name: {mapName}");
                     return "Unknown";
                 }
 
-                Program.Log($"Success: Map Name: {mapName}");
+                //Program.Log($"Success: Map Name: {mapName}");
                 return mapName.ToUpper();
             }
             catch (Exception ex)
@@ -335,54 +334,6 @@ public bool InGame => _inGame;
                 return false;
             }
         }
-
-        private void TestWorldOriginOffsets()
-        {
-            try
-            {
-                if (_gameWorld == 0)
-                {
-                    Program.Log("TestWorldOriginOffsets: GameWorld is null");
-                    return;
-                }
-                Program.Log($"START TRYING OFFSETS : ");
-                var scatterMap = new ScatterReadMap(1);
-                var round = scatterMap.AddRound();
-
-                
-                int entryIndex = 0;
-                for (uint offset = 0x220; offset <= 0x55C; offset += 2)
-                {
-                    round.AddEntry<float>(0, entryIndex++, _gameWorld + offset);
-                    round.AddEntry<float>(0, entryIndex++, _gameWorld + offset + 0x4);
-                    round.AddEntry<float>(0, entryIndex++, _gameWorld + offset + 0x8);
-                }
-
-                scatterMap.Execute();
-
-                entryIndex = 0;
-                for (uint offset = 0x220; offset <= 0x55C; offset += 2)
-                {
-                    if (scatterMap.Results[0][entryIndex].TryGetResult<float>(out var x) &&
-                        scatterMap.Results[0][entryIndex + 1].TryGetResult<float>(out var y) &&
-                        scatterMap.Results[0][entryIndex + 2].TryGetResult<float>(out var z))
-                    {
-                        Program.Log($"WorldOrigin@0x{offset:X3}=({x}, {y}, {z})");
-                    }
-                    else
-                    {
-                        Program.Log($"WorldOrigin@0x{offset:X3}=Failed to read");
-                    }
-                    entryIndex += 3;
-                }
-                Thread.Sleep(2000);
-            }
-            catch (Exception ex)
-            {
-                Program.Log($"TestWorldOriginOffsets: Error - {ex.Message}");
-            }
-        }
-
         private bool GetCameraCache()
         {
             try
@@ -398,9 +349,9 @@ public bool InGame => _inGame;
                 var cameraManagerRound = cameraInfoScatterMap.AddRound();
 
                 cameraManagerRound.AddEntry<ulong>(0, 0, _playerController + Offsets.PlayerController.PlayerCameraManager);
-                cameraManagerRound.AddEntry<float>(0, 11, _gameWorld + Offsets.World.WorldOrigin);
-                cameraManagerRound.AddEntry<float>(0, 12, _gameWorld + Offsets.World.WorldOrigin + 0x4);
-                cameraManagerRound.AddEntry<float>(0, 13, _gameWorld + Offsets.World.WorldOrigin + 0x8);
+                cameraManagerRound.AddEntry<int>(0, 11, _gameWorld + Offsets.World.WorldOrigin);
+                cameraManagerRound.AddEntry<int>(0, 12, _gameWorld + Offsets.World.WorldOrigin + 0x4);
+                cameraManagerRound.AddEntry<int>(0, 13, _gameWorld + Offsets.World.WorldOrigin + 0x8);
 
                 cameraInfoScatterMap.Execute();
 
@@ -426,12 +377,11 @@ public bool InGame => _inGame;
 
                 viewInfoScatterMap.Execute();
 
-                if (cameraInfoScatterMap.Results[0][11].TryGetResult<float>(out var absoluteX) &&
-                    cameraInfoScatterMap.Results[0][12].TryGetResult<float>(out var absoluteY) &&
-                    cameraInfoScatterMap.Results[0][13].TryGetResult<float>(out var absoluteZ))
+                if (cameraInfoScatterMap.Results[0][11].TryGetResult<int>(out var absoluteX) &&
+                    cameraInfoScatterMap.Results[0][12].TryGetResult<int>(out var absoluteY) &&
+                    cameraInfoScatterMap.Results[0][13].TryGetResult<int>(out var absoluteZ))
                 {
                     _absoluteLocation = new Vector3(absoluteX, absoluteY, absoluteZ);
-                    //Program.Log($"GetCameraCache: WorldOrigin=({absoluteX}, {absoluteY}, {absoluteZ})");
                 }
                 else
                 {
@@ -443,13 +393,12 @@ public bool InGame => _inGame;
                     viewInfoScatterMap.Results[0][15].TryGetResult<float>(out var y) &&
                     viewInfoScatterMap.Results[0][16].TryGetResult<float>(out var z))
                 {
-                    Program.Log($"GetCameraCache: CameraLocation=({x}, {y}, {z})");
                     _localUPlayer.Position = new Vector3(
-                        x + _absoluteLocation.X,
-                        y + _absoluteLocation.Y,
-                        z + _absoluteLocation.Z
+                        x,
+                        y,
+                        z
                     );
-                    
+
                 }
                 else
                 {

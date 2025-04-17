@@ -80,12 +80,12 @@ namespace squad_dma
             { ActorType.Mine, "Mine" },
             { ActorType.Motorcycle, "Motorcycle" },
             { ActorType.RallyPoint, "Rally Point" },
-            { ActorType.Tank, "Tank" },
-            { ActorType.TankMGS, "Tank MGS" },
+            { ActorType.Tank, "Heavy Tank" },
+            { ActorType.TankMGS, "Medium Tank" },
             { ActorType.TrackedAPC, "Tracked APC" },
-            { ActorType.TrackedLogistics, "Tracked Logistics" },
+            { ActorType.TrackedLogistics, "Half Track" },
             { ActorType.TrackedAPCArtillery, "Tracked APC Artillery" },
-            { ActorType.TrackedIFV, "Tracked IFV" },
+            { ActorType.TrackedIFV, "Light Tank" },
             { ActorType.TrackedJeep, "Tracked Jeep" },
             { ActorType.TransportHelicopter, "Transport Helicopter" },
             { ActorType.TruckAntiAir, "Truck Anti-Air" },
@@ -105,8 +105,6 @@ namespace squad_dma
             ActorType.TrackedJeep, ActorType.TransportHelicopter, ActorType.TruckAntiAir, ActorType.TruckArtillery,
             ActorType.TruckLogistics, ActorType.TruckTransport, ActorType.TruckTransportArmed
         };
-
-        private static readonly List<(UActor actor, Vector2 screenPos, float distance)> visibleActors = new List<(UActor, Vector2, float)>();
 
         public EspOverlay()
         {
@@ -240,12 +238,16 @@ namespace squad_dma
             bool showAllies = Program.Config.EspShowAllies;
             var playerColor = brush.Color;
 
-            visibleActors.Clear();
+            var visibleActors = new List<(UActor actor, Vector2 screenPos, float distance)>();
+
             long totalWtsTime = 0;
             int wtsCalls = 0;
             foreach (var actor in actors.Values)
             {
-                if (actor == null || actor.Position == Vector3.Zero || !actor.IsAlive)
+                if (actor == null || actor.Position == Vector3.Zero)
+                    continue;
+
+                if (actor.ActorType == ActorType.Player && !actor.IsAlive)
                     continue;
 
                 float distance = Vector3.Distance(camPos, actor.Position) / 100f;
@@ -318,7 +320,8 @@ namespace squad_dma
 
         private bool IsVehicle(UActor actor)
         {
-            return VehicleTypes.Contains(actor.ActorType);
+            bool isVehicle = VehicleTypes.Contains(actor.ActorType);
+            return isVehicle;
         }
 
         private void DrawVehicleBox(UActor actor, Vector2 screenPos, float distance)
@@ -348,26 +351,59 @@ namespace squad_dma
                 screenPos.X - 50, screenPos.Y - halfSize - 20, screenPos.X + 50, screenPos.Y - halfSize), vehicleBrush);
         }
 
-        private void DrawBoneLines(Vector2[] screenPositions)
+        void DrawBoneLines(Vector2[] screenPositions)
         {
-            DrawLine(screenPositions[0], screenPositions[1], boneBrush); // Head -> Neck
-            DrawLine(screenPositions[1], screenPositions[2], boneBrush); // Neck -> Torso
-            DrawLine(screenPositions[2], screenPositions[3], boneBrush); // Torso -> Spine
-            DrawLine(screenPositions[3], screenPositions[4], boneBrush); // Spine -> Pelvis
-            DrawLine(screenPositions[2], screenPositions[5], boneBrush); // Torso -> Right arm
-            DrawLine(screenPositions[5], screenPositions[6], boneBrush);
-            DrawLine(screenPositions[6], screenPositions[7], boneBrush);
-            DrawLine(screenPositions[7], screenPositions[8], boneBrush);
-            DrawLine(screenPositions[2], screenPositions[9], boneBrush); // Torso -> Left arm
-            DrawLine(screenPositions[9], screenPositions[10], boneBrush);
-            DrawLine(screenPositions[10], screenPositions[11], boneBrush);
-            DrawLine(screenPositions[11], screenPositions[12], boneBrush);
-            DrawLine(screenPositions[4], screenPositions[13], boneBrush); // Pelvis -> Right leg
-            DrawLine(screenPositions[13], screenPositions[14], boneBrush);
-            DrawLine(screenPositions[14], screenPositions[15], boneBrush);
-            DrawLine(screenPositions[4], screenPositions[16], boneBrush); // Pelvis -> Left leg
-            DrawLine(screenPositions[16], screenPositions[17], boneBrush);
-            DrawLine(screenPositions[17], screenPositions[18], boneBrush);
+            if (screenPositions == null || screenPositions.Length == 0)
+                return;
+
+            int[] boneIds = { 11, 9, 8, 7, 5, 14, 15, 16, 17, 38, 39, 40, 41, 68, 63, 64, 66, 69, 70, 71, 73 };
+
+            var boneConnections = new List<(int, int)>
+            {
+                // Head → Neck: 11 → 8
+                (0, 2),
+                // Spine: 8 → 7 → 5
+                (2, 3),
+                (3, 4),
+                // Neck → Left Shoulder: 8 → 14
+                (2, 5),
+                // Left Shoulder → Left Hand: 14 → 15 → 16 → 17
+                (5, 6),
+                (6, 7),
+                (7, 8),
+                // Neck → Right Shoulder: 8 → 38
+                (2, 9),
+                // Right Shoulder → Right Hand: 38 → 39 → 40 → 41
+                (9, 10),
+                (10, 11),
+                (11, 12),
+                // Pelvis → Left Hip: 5 → 68
+                (4, 13),
+                // Left Leg: 68 → 63 → 64 → 66
+                (13, 14),
+                (14, 15),
+                (15, 16),
+                // Pelvis → Right Hip: 5 → 69
+                (4, 17),
+                // Right Leg: 69 → 70 → 71 → 73
+                (17, 18),
+                (18, 19),
+                (19, 20),
+            };
+
+            foreach (var (startIndex, endIndex) in boneConnections)
+            {
+                if (startIndex < 0 || startIndex >= screenPositions.Length ||
+                    endIndex < 0 || endIndex >= screenPositions.Length ||
+                    screenPositions[startIndex] == Vector2.Zero || screenPositions[endIndex] == Vector2.Zero)
+                    continue;
+
+                renderTarget.DrawLine(
+                    screenPositions[startIndex].ToRawVector2(),
+                    screenPositions[endIndex].ToRawVector2(),
+                    boneBrush
+                );
+            }
         }
 
         private RawRectangleF GetBoxFromBones(Vector2[] screenPositions)
@@ -411,24 +447,6 @@ namespace squad_dma
             return actor.ActorType == ActorType.Player
                 ? (Program.Config.ShowNames ? actor.Name : "")
                 : (ActorTypeNames.TryGetValue(actor.ActorType, out var typeName) ? typeName : "");
-        }
-
-        private void DrawLine(Vector2 start, Vector2 end, SolidColorBrush lineBrush)
-        {
-            if (start != Vector2.Zero && end != Vector2.Zero)
-                renderTarget.DrawLine(start.ToRawVector2(), end.ToRawVector2(), lineBrush);
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            running = false;
-            brush.Dispose();
-            vehicleBrush.Dispose();
-            boneBrush.Dispose();
-            healthBrush.Dispose();
-            textFormat.Dispose();
-            renderTarget.Dispose();
-            base.OnClosed(e);
         }
     }
 }

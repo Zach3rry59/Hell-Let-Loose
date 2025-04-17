@@ -109,7 +109,7 @@ namespace squad_dma
             try
             {
                 var count = this.ActorCount;
-                if (count < 10)
+                if (count < 5)
                     throw new GameEnded();
 
                 var initialActorScatterMap = new ScatterReadMap(count);
@@ -156,7 +156,7 @@ namespace squad_dma
                     {
                         actorName = "Unknown";
                     }
-                    //Program.Log($"UpdateList: Actor 0x{item.Key:X}, NameId={item.Value}, Name={actorName}");
+                    Program.Log($"UpdateList: Actor 0x{item.Key:X}, NameId={item.Value}, Name={actorName}");
                 }
 
                 var playersNameIDs = names.Where(x => x.Value.Contains("PlayerPawn") || Names.TechNames.ContainsKey(x.Value)).ToDictionary();
@@ -215,8 +215,9 @@ namespace squad_dma
             {
                 this._regSw.Restart();
             }
+        }
 
-            UActor reallocateActor(ulong actorBase, Team team, ActorType actorType, uint nameId)
+        UActor reallocateActor(ulong actorBase, Team team, ActorType actorType, uint nameId)
             {
                 try
                 {
@@ -233,13 +234,15 @@ namespace squad_dma
                     throw new Exception($"ERROR re-allocating player: ", ex);
                 }
             }
-        }
-
+        
         public void UpdateAllPlayers()
         {
             try
             {
                 var count = _actors.Count;
+
+                if (count < 5)
+                    throw new GameEnded();
 
                 var actorBases = _actors.Values.Select(actor => actor.Base).Order().ToArray();
                 var playerInfoScatterMap = new ScatterReadMap(count);
@@ -249,7 +252,7 @@ namespace squad_dma
                 var meshRound = playerInfoScatterMap.AddRound();
                 var boneInfoRound = playerInfoScatterMap.AddRound();
 
-                int[] boneIds = { /* 8, 7, 6, ... */ };
+                int[] boneIds = { 11, 9, 8, 7, 5, 14, 15, 16, 17, 38, 39, 40, 41, 68, 63, 64, 66, 69, 70, 71, 73 };
 
                 for (int i = 0; i < count; i++)
                 {
@@ -270,27 +273,36 @@ namespace squad_dma
                         teamInfoRound.AddEntry<int>(i, 10, pawnPlayerState, null, Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlatoonIndex);
 
                         var meshPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 11, actorAddr + Offsets.AShooterCharacter.Mesh);
-                        meshRound.AddEntry<FTransform>(i, 12, meshPtr, null, 0x1C0);
-                        var boneArrayPtr = meshRound.AddEntry<ulong>(i, 13, meshPtr, null, 0x4B0);
+                        meshRound.AddEntry<FTransform>(i, 12, meshPtr, null, Offsets.USceneComponent.ComponentToWorld);
+                        var boneArrayPtr = meshRound.AddEntry<ulong>(i, 13, meshPtr, null, Offsets.USkeletalMeshComponent.BonesArray);
 
                         for (int j = 0; j < boneIds.Length; j++)
                         {
                             boneInfoRound.AddEntry<FTransform>(i, 25 + j, boneArrayPtr, null, (uint)(boneIds[j] * 0x30));
                         }
-                    } /*
-                    else if (Names.HLLFortifications.Contains(actorType))
+                    }
+                    else if (Names.Deployables.Contains(actorType))
                     {
-                        // Lire UHLLSimpleHealthComponent->HealthInfo
+                        // UHLLSimpleHealthComponent->HealthInfo
                         var healthComponentPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 2, actorAddr + Offsets.AHLLDispenseStructure.HealthComponent);
                         playerInstanceInfoRound.AddEntry<float>(i, 3, healthComponentPtr, null, Offsets.UHLLSimpleHealthComponent.HealthInfo + Offsets.FRepHealthInfo.Health);
                         teamInfoRound.AddEntry<byte>(i, 5, actorAddr + Offsets.AHLLDispenseStructure.Team);
-                    } */
+                    }
+                    // Vehicle Tanks
+                    else if (Names.Tanks.Contains(actorType))
+                    {
+                        // UHLLSimpleHealthComponent->HealthInfo
+                        var armourHealthPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 2, actorAddr + Offsets.ABaseTank.ArmourHealth);
+                        playerInstanceInfoRound.AddEntry<ushort>(i, 3, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo + Offsets.FHLLArmourHealthData.CurrentHealth);
+                        playerInstanceInfoRound.AddEntry<ushort>(i, 4, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo );
+                        teamInfoRound.AddEntry<byte>(i, 5, actorAddr + Offsets.ABaseTank.Team);
+                    }
                     else // Vehicle
                     {
-                        // Lire UHLLArmourHealthComponent->ArmourInfo
+                        // UHLLArmourHealthComponent->ArmourInfo
                         var armourHealthPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 2, actorAddr + Offsets.ABaseVehicle.ArmourHealth);
                         playerInstanceInfoRound.AddEntry<ushort>(i, 3, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo + Offsets.FHLLArmourHealthData.CurrentHealth);
-                        playerInstanceInfoRound.AddEntry<ushort>(i, 4, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo + Offsets.FHLLArmourHealthData.MaxHealth);
+                        playerInstanceInfoRound.AddEntry<ushort>(i, 4, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo);
                         teamInfoRound.AddEntry<byte>(i, 5, actorAddr + Offsets.ABaseVehicle.Team);
                     }
 
@@ -371,7 +383,7 @@ namespace squad_dma
                             }
                         }
 
-                         if (results.TryGetValue(11, out var meshResult) && meshResult.TryGetResult<ulong>(out var meshAddr))
+                        if (results.TryGetValue(11, out var meshResult) && meshResult.TryGetResult<ulong>(out var meshAddr))
                         {
                             actor.Mesh = meshAddr;
                             if (meshAddr == 0)
@@ -381,7 +393,65 @@ namespace squad_dma
                                 continue;
                             }
 
-                            // ... (Bones) 
+                            if (results.TryGetValue(12, out var ctwResult) && ctwResult.TryGetResult<FTransform>(out var ctw))
+                            {
+                                actor.ComponentToWorld = ctw;
+                            }
+                            else
+                            {
+                                actor.BoneScreenPositions = new Vector2[boneIds.Length];
+                                Array.Clear(actor.BoneScreenPositions, 0, actor.BoneScreenPositions.Length);
+                                continue;
+                            }
+
+                            if (results.TryGetValue(13, out var boneArrayResult) && boneArrayResult.TryGetResult<ulong>(out var boneArrayPtr))
+                            {
+                                if (boneArrayPtr == 0)
+                                {
+                                    actor.BoneScreenPositions = new Vector2[boneIds.Length];
+                                    Array.Clear(actor.BoneScreenPositions, 0, actor.BoneScreenPositions.Length);
+                                    continue;
+                                }
+
+                                actor.BoneTransforms.Clear();
+                                var viewInfo = new MinimalViewInfo
+                                {
+                                    Location = Memory._game.LocalPlayer.Position,
+                                    Rotation = Memory._game.LocalPlayer.Rotation3D,
+                                    FOV = Memory._game.CurrentFOV
+                                };
+                                actor.BoneScreenPositions = new Vector2[boneIds.Length];
+
+                                bool anyBoneSuccess = false;
+                                for (int j = 0; j < boneIds.Length; j++)
+                                {
+                                    if (results.TryGetValue(25 + j, out var boneResult) &&
+                                        boneResult.TryGetResult<FTransform>(out var boneTransform))
+                                    {
+                                        actor.BoneTransforms[boneIds[j]] = boneTransform;
+                                        Vector3 boneWorldPos = TransformToWorld(boneTransform, actor.ComponentToWorld);
+                                        actor.BoneScreenPositions[j] = Camera.WorldToScreen(viewInfo, boneWorldPos);
+                                        if (actor.BoneScreenPositions[j] != Vector2.Zero)
+                                        {
+                                            anyBoneSuccess = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        actor.BoneScreenPositions[j] = Vector2.Zero;
+                                    }
+                                }
+
+                                if (!anyBoneSuccess)
+                                {
+                                    Array.Clear(actor.BoneScreenPositions, 0, actor.BoneScreenPositions.Length);
+                                }
+                            }
+                            else
+                            {
+                                actor.BoneScreenPositions = new Vector2[boneIds.Length];
+                                Array.Clear(actor.BoneScreenPositions, 0, actor.BoneScreenPositions.Length);
+                            }
                         }
 
                         else
@@ -389,6 +459,7 @@ namespace squad_dma
                             actor.Mesh = 0;
                             actor.BoneScreenPositions = new Vector2[boneIds.Length];
                             Array.Clear(actor.BoneScreenPositions, 0, actor.BoneScreenPositions.Length);
+                            continue;
                         }
                     }
                     else // Vehicle
@@ -457,7 +528,6 @@ namespace squad_dma
                 Program.Log($"CRITICAL ERROR - UpdateAllPlayers Loop FAILED: {ex}");
             }
         }
-
         private Vector3 TransformToWorld(FTransform boneTransform, FTransform componentToWorld)
         {
             boneTransform.Scale3D = new Vector3(1, 1, 1);

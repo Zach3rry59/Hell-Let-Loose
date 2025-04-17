@@ -2,7 +2,7 @@
     "mapID": [ "ElAlamein", "ELALAMEIN" ],
     "x": 960,
     "y": 960,
-    "scale": 0.012,
+    "scale": 0.0096,
     "mapLayers": [
         {
             "minHeight": -30000,

@@ -1,12 +1,18 @@
 using SkiaSharp;
+using squad_dma;
 
 namespace squad_dma {
     public class Names {
         public static readonly Dictionary<string, ActorType> TechNames = new()
         {
+                        // HLL Recon 
+                        
+            {"BP_Greyhound_C", ActorType.IFV },
+            {"BP_GreyhoundWinter_C", ActorType.IFV },
                         // HLL Axis
+                        
             {"BP_Kubelwagen_C", ActorType.JeepTransport },
-            {"BP_MobileSpawn_GER_C", ActorType.TrackedLogistics },
+            {"BP_Halftrack_GER_C", ActorType.TrackedLogistics },
             {"BP_Panther_max_C", ActorType.Tank },
             {"BP_PanzerIV_C", ActorType.TankMGS },
             {"BP_Luchs_C", ActorType.TrackedIFV },
@@ -17,27 +23,56 @@ namespace squad_dma {
             {"Mine_SMine_C", ActorType.Mine},
             {"Mine_Tellermine43_C", ActorType.Mine},
 
+
+            {"BP_Puma_C", ActorType.IFV },
+            {"BP_Tiger_NA_C", ActorType.Tank },
+            {"BP_Luchs_NA_C", ActorType.TrackedIFV },
+            {"BP_Puma_NA_C", ActorType.IFV },
+            {"BP_OpelBlitz_Transport_NA_C", ActorType.TruckTransport },
+            {"BP_OpelBlitz_Supply_NA_C", ActorType.TruckLogistics },
+
+            {"BP_GER_SFH18_C", ActorType.DeployableMortars },
+
+            {"BP_PantherWinter_max_C", ActorType.Tank },
+            {"BP_PanzerIVWinter_C", ActorType.TankMGS },
+            {"BP_LuchsWinter_C", ActorType.TrackedIFV },
+            {"BP_OpelBlitzWinter_Transport_C", ActorType.TruckTransport },
+            {"BP_OpelBlitzWinter_Supply_C", ActorType.TruckLogistics },
+
                           // HLL USA
             {"BP_JeepUS_C", ActorType.JeepTransport },
-            {"BP_MobileSpawn_US_C", ActorType.TrackedLogistics },
+            {"BP_Halftrack_US_C", ActorType.TrackedLogistics },
             {"BP_Sherman_Jumbo_76mm_C", ActorType.Tank },
             {"BP_Sherman_M4A3_75_W_C", ActorType.TankMGS },
             {"BP_Stuart_C", ActorType.TrackedIFV },
             {"BP_GMCDeuce_Transport_C", ActorType.TruckTransport },
             {"BP_GMCDeuce_Supply_C", ActorType.TruckLogistics },
-            {"US_Outpost_C", ActorType.RallyPoint},
-            {"US_Garrison_C", ActorType.Hab},
+
+
+            {"BP_ShermanWinter_Jumbo_76mm_C", ActorType.Tank },
+            {"BP_ShermanWinter_M4A3_75_W_C", ActorType.TankMGS },
+            {"BP_StuartWinter_C", ActorType.TrackedIFV },
+            {"BP_GMCDeuceWinter_Transport_C", ActorType.TruckTransport },
+            {"BP_GMCDeuceWinter_Supply_C", ActorType.TruckLogistics },
+
             {"Mine_M2AP_C", ActorType.Mine},
             {"Mine_M1A1_C", ActorType.Mine},
 
                           // HLL RU
             {"BP_Gaz67_C", ActorType.JeepTransport },
-            {"BP_MobileSpawn_RU_C", ActorType.TrackedLogistics },
+            {"BP_Halftrack_RU_C", ActorType.TrackedLogistics },
             {"BP_IS_1_C", ActorType.Tank },
             {"BP_T34_76_C", ActorType.TankMGS },
             {"BP_T70_C", ActorType.TrackedIFV },
             {"BP_Zis_5_Transport_C", ActorType.TruckTransport },
             {"BP_Zis_5_Supply_C", ActorType.TruckLogistics },
+
+            {"BP_ISWinter_1_C", ActorType.Tank },
+            {"BP_T34Winter_76_C", ActorType.TankMGS },
+            {"BP_T70Winter_C", ActorType.TrackedIFV },
+            {"BP_ZisWinter_5_Transport_C", ActorType.TruckTransport },
+            {"BP_ZisWinter_5_Supply_C", ActorType.TruckLogistics },
+
             {"RU_Outpost_C", ActorType.RallyPoint},
             {"RU_Garrison_C", ActorType.Hab},
             {"Mine_POMZ_C", ActorType.Mine},
@@ -47,11 +82,29 @@ namespace squad_dma {
 
                           // HLL Allies
             {"BP_JeepCOM_C", ActorType.JeepTransport },
+            {"BP_Halftrack_COM_C", ActorType.TrackedLogistics },
             {"BP_ChurchillMk7_C", ActorType.Tank },
             {"BP_Cromwell_C", ActorType.TankMGS },
             {"BP_Tetrarch_C", ActorType.TrackedIFV },
             {"BP_Bedford_Transport_C", ActorType.TruckTransport },
             {"BP_Bedford_Supply_C", ActorType.TruckLogistics },
+
+            {"BP_ChurchillMk7Winter_C", ActorType.Tank },
+            {"BP_CromwellWinter_C", ActorType.TankMGS },
+            {"BP_TetrarchWinter_C", ActorType.TrackedIFV },
+            {"BP_BedfordWinter_Transport_C", ActorType.TruckTransport },
+            {"BP_BedfordWinter_Supply_C", ActorType.TruckLogistics },
+
+
+            {"BP_JeepCOM_NA_C", ActorType.JeepTransport },
+            {"BP_Bedford_Supply_NA_C", ActorType.TruckLogistics },
+            {"BP_Bedford_Transport_NA_C", ActorType.TruckTransport },
+            {"BP_Daimler_NA_C", ActorType.IFV },
+
+            {"BP_Churchill_C", ActorType.Tank },
+            {"BP_Crusader_C", ActorType.TankMGS},
+            {"BP_M3_Stuart_Honey_C", ActorType.TrackedIFV },
+
             {"COM_Outpost_C", ActorType.RallyPoint},
             {"COM_Garrison_C", ActorType.Hab},
             {"Mine_ShrapnelMK2_C", ActorType.Mine},
@@ -120,6 +173,12 @@ namespace squad_dma {
             ActorType.FOBRadio,
             ActorType.Mine,
             ActorType.RallyPoint,
+        ];
+
+        public static readonly HashSet<ActorType> Tanks = [
+            ActorType.Tank,
+            ActorType.TankMGS,
+            ActorType.TrackedIFV,
         ];
 
         public static readonly HashSet<ActorType> Deployables = [

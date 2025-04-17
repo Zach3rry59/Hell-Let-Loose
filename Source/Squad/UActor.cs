@@ -16,12 +16,15 @@ namespace squad_dma
         public uint NameId { get; set; }
         public string Name { get; set; }
         public float Health { get; set; } = -1;
-        public float MaxHealth { get; set; } = -1; // Ajouté pour stocker la santé maximale
+        public float MaxHealth { get; set; } = -1;
         public int TeamID { get; set; } = -1;
         public int SquadID { get; set; } = -1;
         public Team Team { get; set; } = Team.Unknown;
         public ulong Mesh { get; set; }
+        public FTransform ComponentToWorld { get; set; }
+        public Dictionary<int, FTransform> BoneTransforms { get; set; } = new Dictionary<int, FTransform>();
         public Vector2[] BoneScreenPositions { get; set; }
+        public bool NeedsFullUpdate { get; set; } = true;
 
         public bool IsFriendly()
         {

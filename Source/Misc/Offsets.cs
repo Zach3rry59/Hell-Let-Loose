@@ -13,7 +13,7 @@
         public const uint GameState = 0x130;
         public const uint Levels = 0x148;
         public const uint OwningGameInstance = 0x188;
-        public const uint WorldOrigin = 0x5C0; // 0x5B8 or 0x5C4 on Squad
+        public const uint WorldOrigin = 0x544; // 0x5B8 or 0x5C4 on Squad
     }
 
     public struct GameInstance
@@ -48,7 +48,11 @@
         public const uint ComponentToWorld = 0x1C0; // Relative Offset Guess
         public const uint RelativeScale3D = 0x134;
     }
+    public struct USkeletalMeshComponent
+    {
+        public const uint BonesArray = 0x440; // if games update i'm fucked can't use reclass with EAC
 
+    }
     public struct UPlayer
     {
         public const uint PlayerController = 0x30;
@@ -141,6 +145,12 @@
     {
         public const int ArmourHealth = 0x428; // UHLLArmourHealthComponent*
         public const int Team = 0x2e0;         // ETeam (uint8)
+    }
+
+    public static class ABaseTank
+    {
+        public const int ArmourHealth = 0x4d0; // UHLLArmourHealthComponent*
+        public const int Team = 0x520;         // ETeam (uint8)
     }
 
     public static class UHLLArmourHealthComponent
