@@ -34,7 +34,7 @@ namespace squad_dma.Source.Squad.Features
         {
             try
             {
-                if (!IsLocalPlayerValid())
+                if (!IsLocalPlayerValid() && _inGame)
                 {
                     Program.Log("NoSuppression.Apply: Invalid local player");
                     return;

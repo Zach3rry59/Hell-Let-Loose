@@ -156,7 +156,16 @@
         public const int PlayerTeam = 0x0;    // ETeam (uint8)
         public const int PlatoonIndex = 0x4;  // int32
     }
-
+    public static class AHLLExplosive
+    {
+        public const int HealthComponent = 0x298; // UHLLSimpleHealthComponent*
+        public const int Team = 0x2a8;           // ETeam (uint8)
+    }
+    public static class ADynamicSpawn
+    {
+        public const int HealthComponent = 0x380; // UHLLSimpleHealthComponent*
+        public const int Team = 0x2a8;           // ETeam (uint8)
+    }
     public static class AHLLDispenseStructure
     {
         public const int HealthComponent = 0x298; // UHLLSimpleHealthComponent*

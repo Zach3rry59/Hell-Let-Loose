@@ -230,9 +230,70 @@ namespace squad_dma
             matrix = SKMatrix.Concat(matrix, SKMatrix.CreateRotationDegrees(rotation));
             matrix = SKMatrix.Concat(matrix, SKMatrix.CreateTranslation(-iconWidth / 2, -iconHeight / 2));
 
+            SKPaint paint;
+            var vehicleTypes = new HashSet<ActorType>
+            {
+                ActorType.TruckTransport,
+                ActorType.TruckLogistics,
+                ActorType.TruckAntiAir,
+                ActorType.TruckArtillery,
+                ActorType.TruckTransportArmed,
+                ActorType.JeepTransport,
+                ActorType.JeepLogistics,
+                ActorType.JeepTurret,
+                ActorType.JeepArtillery,
+                ActorType.JeepAntitank,
+                ActorType.JeepRWSTurret,
+                ActorType.APC,
+                ActorType.IFV,
+                ActorType.TrackedAPC,
+                ActorType.TrackedIFV,
+                ActorType.TrackedJeep,
+                ActorType.Tank,
+                ActorType.TankMGS,
+                ActorType.TransportHelicopter,
+                ActorType.AttackHelicopter,
+                ActorType.Boat,
+                ActorType.BoatLogistics,
+                ActorType.Motorcycle,
+                ActorType.AntiAir,
+                ActorType.TrackedLogistics,
+                ActorType.LoachCAS,
+                ActorType.LoachScout,
+                ActorType.TrackedAPCArtillery,
+                ActorType.Mine,
+                ActorType.DeployableRepairStation,
+                ActorType.Hab,
+                ActorType.RallyPoint,
+            };
+
+            if (vehicleTypes.Contains(actor.ActorType))
+            {
+
+                SKColor teamColor;
+                if (actor.IsFriendly())
+                {
+                    teamColor = new SKColor(0, 187, 254);
+                }
+                else
+                {
+                    teamColor = SKColors.Red; 
+                }
+
+                paint = new SKPaint
+                {
+                    IsAntialias = true,
+                    ColorFilter = SKColorFilter.CreateBlendMode(teamColor, SKBlendMode.Modulate)
+                };
+            }
+            else
+            {
+                paint = SKPaints.PaintBitmap;
+            }
+
             canvas.Save();
             canvas.SetMatrix(matrix);
-            canvas.DrawBitmap(icon, SKRect.Create(iconWidth, iconHeight), SKPaints.PaintBitmap);
+            canvas.DrawBitmap(icon, SKRect.Create(iconWidth, iconHeight), paint);
             canvas.Restore();
         }
 

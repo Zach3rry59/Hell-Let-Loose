@@ -1129,7 +1129,8 @@ namespace squad_dma
 
                 if (actor.ActorType != ActorType.ProjectileAA)
                 {
-                    int aimlineLength = actor == LocalPlayer ? 0 : 15;
+                    int aimlineLength = actor == LocalPlayer ? 0 :
+                    (!string.IsNullOrEmpty(actor.PrivateName) && _config.HighlightedPlayerNames.Contains(actor.PrivateName) ? 30 : 15);
                     DrawActor(canvas, actor, actorZoomedPos, aimlineLength, localPlayerMapPos);
                 }
 
@@ -1169,7 +1170,11 @@ namespace squad_dma
 
                 if (actor.ActorType == ActorType.Player)
                 {
-                    var color = actor.IsInMySquad() ? SKPaints.Squad : actor.GetEntityPaint().Color;
+                    var color = !string.IsNullOrEmpty(actor.PrivateName) && _config.HighlightedPlayerNames.Contains(actor.PrivateName)
+                    ? SKColors.Orange
+                    : actor.IsInMySquad()
+                    ? SKPaints.Squad
+                    : actor.GetEntityPaint().Color;
                     actorZoomedPos.DrawPlayerMarker(canvas, actor, aimlineLength, color);
 
                     if (!actor.IsFriendly() && _config.ShowEnemyDistance)

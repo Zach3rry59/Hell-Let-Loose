@@ -160,6 +160,9 @@ namespace squad_dma
         [JsonPropertyName("keybindZoomOut")]
         public Keys KeybindZoomOut { get; set; } = Keys.Down;
 
+        [JsonPropertyName("highlightedPlayerNames")]
+        public List<string> HighlightedPlayerNames { get; set; } = new List<string>();
+
         #region Json Ignore
         [JsonIgnore]
         public Dictionary<string, PaintColor.Colors> DefaultPaintColors = new Dictionary<string, PaintColor.Colors>()
@@ -216,6 +219,8 @@ namespace squad_dma
             NoRecoil = false;
             NoSway = false;
             NoCameraShake = false;
+
+            HighlightedPlayerNames = new List<string>();
         }
 
         /// <summary>

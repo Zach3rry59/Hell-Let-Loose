@@ -14,15 +14,17 @@ namespace squad_dma {
             {"BP_Kubelwagen_C", ActorType.JeepTransport },
             {"BP_Halftrack_GER_C", ActorType.TrackedLogistics },
             {"BP_Panther_max_C", ActorType.Tank },
+            {"BP_Tiger_C", ActorType.Tank },
             {"BP_PanzerIV_C", ActorType.TankMGS },
             {"BP_Luchs_C", ActorType.TrackedIFV },
             {"BP_OpelBlitz_Transport_C", ActorType.TruckTransport },
             {"BP_OpelBlitz_Supply_C", ActorType.TruckLogistics },
             {"GER_Outpost_C", ActorType.RallyPoint},
             {"GER_Garrison_C", ActorType.Hab},
+
+            {"GER_RepairStation_C", ActorType.DeployableRepairStation},
             {"Mine_SMine_C", ActorType.Mine},
             {"Mine_Tellermine43_C", ActorType.Mine},
-
 
             {"BP_Puma_C", ActorType.IFV },
             {"BP_PanzerIV_NA_C", ActorType.TankMGS },
@@ -34,6 +36,8 @@ namespace squad_dma {
 
             {"BP_GER_SFH18_C", ActorType.DeployableMortars },
 
+            {"BP_PumaWinter_C", ActorType.IFV },
+            {"BP_TigerWinter_NA_C", ActorType.Tank },
             {"BP_PantherWinter_max_C", ActorType.Tank },
             {"BP_PanzerIVWinter_C", ActorType.TankMGS },
             {"BP_LuchsWinter_C", ActorType.TrackedIFV },
@@ -56,6 +60,9 @@ namespace squad_dma {
             {"BP_GMCDeuceWinter_Transport_C", ActorType.TruckTransport },
             {"BP_GMCDeuceWinter_Supply_C", ActorType.TruckLogistics },
 
+            {"US_Outpost_C", ActorType.RallyPoint},
+            {"US_Garrison_C", ActorType.Hab},
+            {"US_RepairStation_C", ActorType.DeployableRepairStation},
             {"Mine_M2AP_C", ActorType.Mine},
             {"Mine_M1A1_C", ActorType.Mine},
 
@@ -79,7 +86,7 @@ namespace squad_dma {
             {"Mine_POMZ_C", ActorType.Mine},
             {"Mine_TM-35_C", ActorType.Mine},
 
-            {"RU_RepairStation_C", ActorType.FOBRadio},
+            {"RU_RepairStation_C", ActorType.DeployableRepairStation},
 
                           // HLL Allies
             {"BP_JeepCOM_C", ActorType.JeepTransport },
@@ -106,6 +113,7 @@ namespace squad_dma {
             {"BP_Crusader_C", ActorType.TankMGS},
             {"BP_M3_Stuart_Honey_C", ActorType.TrackedIFV },
 
+            {"COM_RepairStation_C", ActorType.DeployableRepairStation},
             {"COM_Outpost_C", ActorType.RallyPoint},
             {"COM_Garrison_C", ActorType.Hab},
             {"Mine_ShrapnelMK2_C", ActorType.Mine},
@@ -115,6 +123,7 @@ namespace squad_dma {
 
         public static readonly Dictionary<ActorType, SKBitmap> BitMaps = new(){
             {ActorType.FOBRadio, SkiaSharp.Views.Desktop.Extensions.ToSKBitmap(Properties.Resources.FOBRadio)},
+            {ActorType.DeployableRepairStation, SkiaSharp.Views.Desktop.Extensions.ToSKBitmap(Properties.Resources.DeployableRepairStation)},
             {ActorType.Hab, SkiaSharp.Views.Desktop.Extensions.ToSKBitmap(Properties.Resources.Hab)},
             {ActorType.AntiAir, SkiaSharp.Views.Desktop.Extensions.ToSKBitmap(Properties.Resources.AntiAir)},
             {ActorType.APC, SkiaSharp.Views.Desktop.Extensions.ToSKBitmap(Properties.Resources.APC)},
@@ -185,6 +194,7 @@ namespace squad_dma {
         public static readonly HashSet<ActorType> Deployables = [
             ActorType.DeployableAntiAir,
             ActorType.DeployableAntitank,
+            ActorType.DeployableRepairStation,
             ActorType.DeployableAntitankGun,
             ActorType.DeployableGMG,
             ActorType.DeployableHellCannon,
@@ -192,7 +202,6 @@ namespace squad_dma {
             ActorType.DeployableMortars,
             ActorType.DeployableRockets,
             ActorType.Hab,
-            ActorType.FOBRadio,
             ActorType.Mine,
             ActorType.RallyPoint,
         ];

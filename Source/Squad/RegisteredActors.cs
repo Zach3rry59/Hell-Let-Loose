@@ -74,7 +74,7 @@ namespace squad_dma
             this.Actors = new(this._actors);
             this._actorsArray = Memory.ReadPtr(_persistentLevel + Offsets.Level.Actors);
             this._regSw.Start();
-            Program.Log($"RegistredActors initialized with persistentLevel: 0x{persistentLevelAddr:X}");
+            //Program.Log($"RegistredActors initialized with persistentLevel: 0x{persistentLevelAddr:X}");
         }
 
         #region Update List/Player Functions
@@ -119,7 +119,7 @@ namespace squad_dma
             try
             {
                 var count = this.ActorCount;
-                if (count < 5)
+                if (count < 2)
                     throw new GameEnded();
 
                 var initialActorScatterMap = new ScatterReadMap(count);
@@ -251,7 +251,7 @@ namespace squad_dma
             {
                 var count = _actors.Count;
 
-                if (count < 5)
+                if (count < 2)
                     throw new GameEnded();
 
                 var actorBases = _actors.Values.Select(actor => actor.Base).Order().ToArray();
@@ -273,15 +273,15 @@ namespace squad_dma
 
                     if (actorType == ActorType.Player)
                     {
+                        // Existing Player logic remains unchanged
                         playerInstanceInfoRound.AddEntry<float>(i, 2, actorAddr + Offsets.AShooterCharacter.Health);
                         var pawnPlayerState = playerInstanceInfoRound.AddEntry<ulong>(i, 6, actorAddr + Offsets.Pawn.PlayerState);
                         var controller = playerInstanceInfoRound.AddEntry<ulong>(i, 7, actorAddr + Offsets.Pawn.Controller);
                         var controllerPlayerState = teamInfoRound.AddEntry<ulong>(i, 8, controller, null, Offsets.Controller.PlayerState);
 
-                        //TeamID PlatoonIndex
                         teamInfoRound.AddEntry<byte>(i, 9, pawnPlayerState, null, Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlayerTeam);
                         teamInfoRound.AddEntry<int>(i, 10, pawnPlayerState, null, Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlatoonIndex);
-                        teamInfoRound.AddEntry<ulong>(i, 16, pawnPlayerState, null, 0x300);        // FString.Data
+                        teamInfoRound.AddEntry<ulong>(i, 16, pawnPlayerState, null, 0x300);
                         teamInfoRound.AddEntry<int>(i, 17, pawnPlayerState, null, 0x300 + 8);
 
                         var meshPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 11, actorAddr + Offsets.AShooterCharacter.Mesh);
@@ -295,23 +295,32 @@ namespace squad_dma
                     }
                     else if (Names.Deployables.Contains(actorType))
                     {
-                        // UHLLSimpleHealthComponent->HealthInfo
-                        var healthComponentPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 2, actorAddr + Offsets.AHLLDispenseStructure.HealthComponent);
-                        playerInstanceInfoRound.AddEntry<float>(i, 3, healthComponentPtr, null, Offsets.UHLLSimpleHealthComponent.HealthInfo + Offsets.FRepHealthInfo.Health);
-                        teamInfoRound.AddEntry<byte>(i, 5, actorAddr + Offsets.AHLLDispenseStructure.Team);
+                        if (actorType == ActorType.Mine)
+                        {
+                            teamInfoRound.AddEntry<byte>(i, 5, actorAddr + Offsets.AHLLExplosive.Team);
+                        }
+
+                        else if (actorType == ActorType.Hab || actorType == ActorType.RallyPoint)
+                        {
+                            teamInfoRound.AddEntry<byte>(i, 5, actorAddr + ADynamicSpawn.Team);
+                        }
+                        else
+                        {
+                            var healthComponentPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 2, actorAddr + Offsets.AHLLDispenseStructure.HealthComponent);
+                            playerInstanceInfoRound.AddEntry<float>(i, 3, healthComponentPtr, null, Offsets.UHLLSimpleHealthComponent.HealthInfo + Offsets.FRepHealthInfo.Health);
+                            teamInfoRound.AddEntry<byte>(i, 5, actorAddr + Offsets.AHLLDispenseStructure.Team);
+                        }
                     }
-                    // Vehicle Tanks
+                    
                     else if (Names.Tanks.Contains(actorType))
                     {
-                        // UHLLSimpleHealthComponent->HealthInfo
                         var armourHealthPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 2, actorAddr + Offsets.ABaseTank.ArmourHealth);
                         playerInstanceInfoRound.AddEntry<ushort>(i, 3, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo + Offsets.FHLLArmourHealthData.CurrentHealth);
-                        playerInstanceInfoRound.AddEntry<ushort>(i, 4, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo );
+                        playerInstanceInfoRound.AddEntry<ushort>(i, 4, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo);
                         teamInfoRound.AddEntry<byte>(i, 5, actorAddr + Offsets.ABaseTank.Team);
                     }
                     else // Vehicle
                     {
-                        // UHLLArmourHealthComponent->ArmourInfo
                         var armourHealthPtr = playerInstanceInfoRound.AddEntry<ulong>(i, 2, actorAddr + Offsets.ABaseVehicle.ArmourHealth);
                         playerInstanceInfoRound.AddEntry<ushort>(i, 3, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo + Offsets.FHLLArmourHealthData.CurrentHealth);
                         playerInstanceInfoRound.AddEntry<ushort>(i, 4, armourHealthPtr, null, Offsets.UHLLArmourHealthComponent.ArmourInfo);

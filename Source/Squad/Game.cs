@@ -278,8 +278,6 @@ public bool InGame => _inGame;
                 var localPlayersAddress = _gameInstance + Offsets.GameInstance.LocalPlayers;
                 //Program.Log($"LocalPlayers Address: {localPlayersAddress:X}");
                 var localPlayers = Memory.ReadPtr(localPlayersAddress);
-
-                Program.Log($"LocalPlayer Address: {localPlayers:X}");
                 _localPlayer = Memory.ReadPtr(localPlayers);
 
                 _localUPlayer = new UActor(_localPlayer);
@@ -292,7 +290,6 @@ public bool InGame => _inGame;
             {
                 var playerControllerAddress = _localPlayer + Offsets.UPlayer.PlayerController;
                 _playerController = Memory.ReadPtr(playerControllerAddress);
-                Program.Log($"PlayerController Address: {_playerController:X}");
             });
 
         private bool UpdateLocalPlayerInfo()
