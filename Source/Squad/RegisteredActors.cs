@@ -30,7 +30,7 @@ namespace squad_dma
         {
             get
             {
-                const int maxAttempts = 3;
+                const int maxAttempts = 5;
                 for (int attempt = 0; attempt < maxAttempts; attempt++)
                 {
                     try
@@ -112,14 +112,13 @@ namespace squad_dma
         private static Random rng = new Random();
         public void UpdateList()
         {
-            float rand = rng.Next(0, 301);
-            if (this._regSw.ElapsedMilliseconds < 300 + rand)
+            if (this._regSw.ElapsedMilliseconds < 500)
                 return;
 
             try
             {
                 var count = this.ActorCount;
-                if (count < 2)
+                if (count < 6)
                     throw new GameEnded();
 
                 var initialActorScatterMap = new ScatterReadMap(count);
@@ -251,7 +250,7 @@ namespace squad_dma
             {
                 var count = _actors.Count;
 
-                if (count < 2)
+                if (count < 6)
                     throw new GameEnded();
 
                 var actorBases = _actors.Values.Select(actor => actor.Base).Order().ToArray();

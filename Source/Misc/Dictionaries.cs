@@ -48,6 +48,7 @@ namespace squad_dma {
             {"BP_JeepUS_C", ActorType.JeepTransport },
             {"BP_Halftrack_US_C", ActorType.TrackedLogistics },
             {"BP_Sherman_Jumbo_76mm_C", ActorType.Tank },
+            {"BP_Sherman_Jumbo_75mm_C", ActorType.Tank },
             {"BP_Sherman_M4A3_75_W_C", ActorType.TankMGS },
             {"BP_Stuart_C", ActorType.TrackedIFV },
             {"BP_GMCDeuce_Transport_C", ActorType.TruckTransport },

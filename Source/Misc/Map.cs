@@ -283,6 +283,7 @@ namespace squad_dma
                 paint = new SKPaint
                 {
                     IsAntialias = true,
+                    FilterQuality = SKFilterQuality.High,
                     ColorFilter = SKColorFilter.CreateBlendMode(teamColor, SKBlendMode.Modulate)
                 };
             }
