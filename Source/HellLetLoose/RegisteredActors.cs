@@ -1,4 +1,4 @@
-﻿using Offsets;
+using Offsets;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Linq;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     public class RegistredActors
     {
@@ -14,9 +14,9 @@ namespace squad_dma
         private ulong _actorsArray;
         private readonly Stopwatch _regSw = new();
         private readonly ConcurrentDictionary<ulong, UActor> _actors = new();
-        private Dictionary<ulong, int> _squadCache = new();
-        private DateTime _lastSquadUpdate = DateTime.MinValue;
-        private const int SquadUpdateInterval = 1000;
+        private Dictionary<ulong, int> _unitCache = new();
+        private DateTime _lastUnitUpdate = DateTime.MinValue;
+        private const int UnitUpdateInterval = 1000;
 
         public IEnumerable<uint> GetActorNameIds()
         {
@@ -332,7 +332,7 @@ namespace squad_dma
 
                 playerInfoScatterMap.Execute();
 
-                bool updatePlatoons = (DateTime.Now - _lastSquadUpdate).TotalMilliseconds > SquadUpdateInterval;
+                bool updatePlatoons = (DateTime.Now - _lastUnitUpdate).TotalMilliseconds > UnitUpdateInterval;
 
                 for (int i = 0; i < count; i++)
                 {
@@ -369,11 +369,11 @@ namespace squad_dma
                         if (results.TryGetValue(10, out var platoonResult) &&
                             platoonResult.TryGetResult<int>(out var platoonId))
                         {
-                            actor.SquadID = platoonId; // PlatoonIndex
+                            actor.UnitID = platoonId; // PlatoonIndex
                         }
                         else
                         {
-                            actor.SquadID = -1;
+                            actor.UnitID = -1;
                         }
 
                         if (!teamIdFound && results.TryGetValue(6, out var playerStateResult) &&
@@ -383,7 +383,7 @@ namespace squad_dma
                             try
                             {
                                 actor.TeamID = Memory.ReadValue<byte>(playerStateAddr + Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlayerTeam);
-                                actor.SquadID = Memory.ReadValue<int>(playerStateAddr + Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlatoonIndex);
+                                actor.UnitID = Memory.ReadValue<int>(playerStateAddr + Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlatoonIndex);
                                 teamIdFound = true;
                             }
                             catch { /* Silently fail */ }
@@ -392,14 +392,14 @@ namespace squad_dma
                         if (!teamIdFound)
                         {
                             actor.TeamID = -1;
-                            actor.SquadID = -1;
+                            actor.UnitID = -1;
                         }
 
                         if (actor.IsFriendly())
                         {
-                            if (_squadCache.TryGetValue(actor.Base, out var cachedPlatoonId))
+                            if (_unitCache.TryGetValue(actor.Base, out var cachedPlatoonId))
                             {
-                                actor.SquadID = cachedPlatoonId;
+                                actor.UnitID = cachedPlatoonId;
                             }
                         }
 
@@ -558,8 +558,8 @@ namespace squad_dma
 
                 if (updatePlatoons)
                 {
-                    _lastSquadUpdate = DateTime.Now;
-                    _squadCache = _squadCache.Where(kv => _actors.ContainsKey(kv.Key))
+                    _lastUnitUpdate = DateTime.Now;
+                    _unitCache = _unitCache.Where(kv => _actors.ContainsKey(kv.Key))
                                              .ToDictionary(kv => kv.Key, kv => kv.Value);
                 }
             }

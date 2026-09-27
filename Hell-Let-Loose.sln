@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "squad-dma", "squad-dma.csproj", "{14BE0D35-DB08-4379-BC37-CD2EB1A6515B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hell-Let-Loose", "Hell-Let-Loose.csproj", "{14BE0D35-DB08-4379-BC37-CD2EB1A6515B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

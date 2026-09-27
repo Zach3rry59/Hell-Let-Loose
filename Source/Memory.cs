@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -6,7 +6,7 @@ using System.Text;
 using Vmmsharp;
 using static Vmmsharp.Vmm;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     internal static class Memory
     {
@@ -21,7 +21,7 @@ namespace squad_dma
         private static Thread _workerThread;
         private static CancellationTokenSource _workerCancellationTokenSource;
         private static uint _pid;
-        private static ulong _squadBase;
+        private static ulong _gameBase;
         public static Game _game;
         private static volatile int _ticks = 0;
         private static readonly Stopwatch _tickSw = new();
@@ -152,7 +152,7 @@ namespace squad_dma
         }
 
         /// <summary>
-        /// Gets Squad Process ID.
+        /// Gets Hell Let Loose Process ID.
         /// </summary>
         private static bool GetPid()
         {
@@ -165,7 +165,7 @@ namespace squad_dma
                     throw new DMAException("Unable to obtain PID. Game is not running.");
                 else
                 {
-                    //Program.Log($"SquadGame.exe is running at PID {_process.PID}");
+                    //Program.Log($"HLL-Win64-Shipping.exe is running at PID {_process.PID}");
                     return true;
                 }
             }
@@ -184,11 +184,11 @@ namespace squad_dma
             try
             {
                 ThrowIfDMAShutdown();
-                _squadBase = _process.GetModuleBase("HLL-Win64-Shipping.exe");
-                if (_squadBase == 0) throw new DMAException("Unable to obtain Base Module Address. Game may not be running");
+                _gameBase = _process.GetModuleBase("HLL-Win64-Shipping.exe");
+                if (_gameBase == 0) throw new DMAException("Unable to obtain Base Module Address. Game may not be running");
                 // else
                 // {
-                //     Program.Log($"Found SquadGame.exe at 0x{_squadBase.ToString("x")}");
+                //     Program.Log($"Found HLL-Win64-Shipping.exe at 0x{_gameBase.ToString("x")}");
                 //     return true;
                 // }
                 return true;
@@ -266,7 +266,7 @@ namespace squad_dma
 
                 var scatterMap = new ScatterReadMap(1);
                 var baseCheckRound = scatterMap.AddRound();
-                baseCheckRound.AddEntry<string>(0, 0, _squadBase, 8);
+                baseCheckRound.AddEntry<string>(0, 0, _gameBase, 8);
 
                 scatterMap.Execute();
 
@@ -295,23 +295,23 @@ namespace squad_dma
             {
                 while (true)
                 {
-                    Program.Log("Attempting to find Squad Process...");
+                    Program.Log("Attempting to find Hell Let Loose Process...");
 
                     while (!Memory.GetPid() || !Memory.GetModuleBase())
                     {
                         Memory.GameStatus = GameStatus.NotFound;
                         _syncProcessRunning.Reset();
-                        Program.Log("Squad not found, checking again in 1 second...");
+                        Program.Log("Hell Let Loose not found, checking again in 1 second...");
                         Thread.Sleep(1000);
                     }
 
-                    Program.Log("Squad process located! Startup successful.");
+                    Program.Log("Hell Let Loose process located! Startup successful.");
                     _syncProcessRunning.Set();
                     _processCheckTimer.Restart();
 
                     while (true)
                     {
-                        Memory._game = new Game(Memory._squadBase);
+                        Memory._game = new Game(Memory._gameBase);
                         try
                         {
                             Program.Log("Ready -- Waiting for game...");
@@ -557,7 +557,7 @@ namespace squad_dma
             var firstNameScatterMap = new ScatterReadMap(count);
             var namePoolChunkRound = firstNameScatterMap.AddRound();
             var nameEntryRound = firstNameScatterMap.AddRound();
-            var fnamePoolAddr = _squadBase + Offsets.GameObjects.GNames;
+            var fnamePoolAddr = _gameBase + Offsets.GameObjects.GNames;
 
             for (int i = 0; i < count; i++)
             {

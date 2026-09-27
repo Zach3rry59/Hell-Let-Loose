@@ -1,9 +1,9 @@
-﻿using squad_dma.Source.Squad.Features;
+using HellLetLoose.Source.HellLetLoose.Features;
 using System.Collections.ObjectModel;
 using System.Numerics;
 using System.Collections.Generic;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     /// <summary>
     /// Class containing Game instance.
@@ -11,7 +11,7 @@ namespace squad_dma
     public class Game
     {
         #region Fields
-        private readonly ulong _squadBase;
+        private readonly ulong _gameBase;
         private volatile bool _inGame = false;
         private RegistredActors _actors;
         private UActor _localUPlayer;
@@ -30,7 +30,7 @@ namespace squad_dma
         private float _currentFOV;
         private bool _isFiring = false;
 
-        private Source.Squad.Manager _soldierManager;
+        private Source.HellLetLoose.Manager _soldierManager;
         #endregion
 
         #region Properties
@@ -46,9 +46,9 @@ public bool InGame => _inGame;
         #endregion
 
         #region Constructor
-        public Game(ulong squadBase)
+        public Game(ulong gameBase)
         {
-            _squadBase = squadBase;
+            _gameBase = gameBase;
         }
         #endregion
 
@@ -130,7 +130,7 @@ public bool InGame => _inGame;
         #region Private Methods
         private void InitializeManagers()
         {
-            _soldierManager = new Source.Squad.Manager(_playerController, _inGame, _actors);
+            _soldierManager = new Source.HellLetLoose.Manager(_playerController, _inGame, _actors);
             // todo: Initialize all managers here
         }
 
@@ -167,7 +167,7 @@ public bool InGame => _inGame;
         private bool GetGameWorld() =>
             TryExecute(() =>
             {
-                var gWorldAddress = _squadBase + Offsets.GameObjects.GWorld;
+                var gWorldAddress = _gameBase + Offsets.GameObjects.GWorld;
                 //Program.Log($"GWorld Address: {gWorldAddress:X}");
                 _gameWorld = Memory.ReadPtr(gWorldAddress);
             });
@@ -311,13 +311,13 @@ public bool InGame => _inGame;
                         }
 
                         byte teamId = Memory.ReadValue<byte>(playerState + Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlayerTeam);
-                        int squadId = Memory.ReadValue<int>(playerState + Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlatoonIndex);
+                        int unitId = Memory.ReadValue<int>(playerState + Offsets.AShooterPlayerState.RepPlayerInfo + Offsets.FHLLPlayerInfo.PlatoonIndex);
 
-                        if (_localUPlayer.TeamID != teamId || _localUPlayer.SquadID != squadId)
+                        if (_localUPlayer.TeamID != teamId || _localUPlayer.UnitID != unitId)
                         {
                             _localUPlayer.TeamID = teamId;
-                            _localUPlayer.SquadID = squadId;
-                            Program.Log($"LocalPlayer updated: TeamID={teamId}, SquadID={squadId}");
+                            _localUPlayer.UnitID = unitId;
+                            Program.Log($"LocalPlayer updated: TeamID={teamId}, UnitID={unitId}");
                         }
                     }
                     catch (Exception ex)

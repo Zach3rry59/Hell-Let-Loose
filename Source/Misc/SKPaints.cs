@@ -1,6 +1,6 @@
-﻿using SkiaSharp;
+using SkiaSharp;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     internal static class SKPaints
     {
@@ -8,7 +8,7 @@ namespace squad_dma
         public static readonly SKColor Friendly = new SKColor(0, 187, 254);
         public static readonly SKColor Enemy = SKColors.Red;
         public static readonly SKColor Unknown = SKColors.Purple;
-        public static readonly SKColor Squad = SKColors.Green;
+        public static readonly SKColor Unit = SKColors.Green;
 
         public static readonly SKColor DefaultTextColor = new SKColor(233, 0, 255, 255);
 

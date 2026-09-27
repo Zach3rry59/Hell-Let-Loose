@@ -1,4 +1,4 @@
-namespace squad_dma {
+namespace HellLetLoose {
     public enum ActorType {
         Player,
         Admin,

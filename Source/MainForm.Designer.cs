@@ -1,6 +1,6 @@
 using SkiaSharp.Views.Desktop;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     partial class MainForm
     {
@@ -1187,7 +1187,7 @@ namespace squad_dma
             Controls.Add(tabControl);
             Margin = new Padding(4, 3, 4, 3);
             Name = "MainForm";
-            Text = "Squad DMA";
+            Text = "Hell Let Loose";
             ((System.ComponentModel.ISupportInitialize)trkUIScale).EndInit();
             ((System.ComponentModel.ISupportInitialize)trkAimLength).EndInit();
             ((System.ComponentModel.ISupportInitialize)trkTechMarkerScale).EndInit();

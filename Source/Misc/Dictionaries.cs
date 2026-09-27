@@ -1,7 +1,7 @@
 using SkiaSharp;
-using squad_dma;
+using HellLetLoose;
 
-namespace squad_dma {
+namespace HellLetLoose {
     public class Names {
         public static readonly Dictionary<string, ActorType> TechNames = new()
         {

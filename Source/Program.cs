@@ -1,8 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace squad_dma {
+namespace HellLetLoose {
     static class Program {
         private static readonly Mutex _mutex;
         private static readonly bool _singleton;

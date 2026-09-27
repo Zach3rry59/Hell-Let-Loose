@@ -1,8 +1,11 @@
 
-squad-dma.csproj.user
+Hell-Let-Loose.csproj.user
 /obj
 /.vs
 /bin
 /out
 *.dll
 /ing branch test on 78cb66c.
+*.user
+Thumbs.db
+/git

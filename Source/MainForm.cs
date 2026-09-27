@@ -1,4 +1,4 @@
-﻿using DarkModeForms;
+using DarkModeForms;
 using MaterialSkin.Controls;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Numerics;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     public partial class MainForm : Form
     {
@@ -1172,8 +1172,8 @@ namespace squad_dma
                 {
                     var color = !string.IsNullOrEmpty(actor.PrivateName) && _config.HighlightedPlayerNames.Contains(actor.PrivateName)
                     ? SKColors.Orange
-                    : actor.IsInMySquad()
-                    ? SKPaints.Squad
+                    : actor.IsInMyUnit()
+                    ? SKPaints.Unit
                     : actor.GetEntityPaint().Color;
                     actorZoomedPos.DrawPlayerMarker(canvas, actor, aimlineLength, color);
 

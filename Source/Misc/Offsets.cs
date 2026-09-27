@@ -1,4 +1,4 @@
-﻿namespace Offsets
+namespace Offsets
 {
     public struct GameObjects
     {
@@ -13,7 +13,7 @@
         public const uint GameState = 0x130;
         public const uint Levels = 0x148;
         public const uint OwningGameInstance = 0x188;
-        public const uint WorldOrigin = 0x544; // 0x5B8 or 0x5C4 on Squad
+        public const uint WorldOrigin = 0x544;
     }
 
     public struct GameInstance

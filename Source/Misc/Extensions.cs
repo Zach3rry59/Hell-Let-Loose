@@ -1,7 +1,7 @@
-﻿using SkiaSharp;
+using SkiaSharp;
 using System;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     /// <summary>
     /// Extension methods go here.
@@ -63,7 +63,7 @@ namespace squad_dma
 
         public static SKPaint GetEntityPaint(this UActor actor)
         {
-            SKColor color = actor.IsInMySquad() ? SKPaints.Squad
+            SKColor color = actor.IsInMyUnit() ? SKPaints.Unit
                           : actor.IsFriendly() ? SKPaints.Friendly
                           : SKPaints.Enemy;
 

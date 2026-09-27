@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Numerics;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     public struct ViewMatrix
     {

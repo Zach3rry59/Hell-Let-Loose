@@ -1,38 +1,33 @@
+# Hell Let Loose
 
-# Squad-DMA-Radar
+Windows / .NET 8 project adapted for Hell Let Loose by Zach3rry59. The application targets `HLL-Win64-Shipping.exe` and includes a map view, an overlay, and Hell Let Loose map and actor definitions.
 
-## Description
-Squad DMA Radar is a radar tool for Squad that provides real-time tracking of players/vehicles/deployables on a 2D map.
+## Build
 
-## Mod Support
-- Global Escalation
-- Steel Division
-- Super mod (Soon?)
-- MEE (Soon?)
+Requirements: Windows, the .NET 8 SDK (or a compatible newer SDK), and the project's native dependencies.
 
-## Features
-- POI placments for mortar calculations
-- Displays all friendly and enemy players in detail
-- Displays all vehicles / emplacments / deployables in detail
-- Auto selects the layer 
-- Displays a distance for any vehicle for anti-tank players
+```powershell
+dotnet build Hell-Let-Loose.sln -c Release -p:Platform=x64
+```
 
-## Usage
-1. Clone the repository.
-2. Ensure all necessary dependencies are in place.
-3. Compile the project.
-4. Run the application.
+Open `Hell-Let-Loose.sln` in Visual Studio to work on the project. The application is named **Hell Let Loose**; its assembly is `Hell-Let-Loose`, and its root namespace is `HellLetLoose`.
+
+Publishing profiles write to `out/<Configuration>/` inside the checkout. Personal IDE settings and build output are ignored by Git.
 
 ## Dependencies
+
 - FTD3XX.dll
-- leechcore.dll, vmm.dll, dbghelp.dll, symsrv.dll and vcruntime140.dll - https://github.com/ufrisk/MemProcFS/releases
-- libSkiaSharp.dll - SkiaSharp library
+- leechcore.dll, vmm.dll, dbghelp.dll, symsrv.dll, and vcruntime140.dll: [MemProcFS](https://github.com/ufrisk/MemProcFS/releases)
+- SkiaSharp and the other NuGet packages declared in `Hell-Let-Loose.csproj`
 
-## Note
-Ensure all necessary files are properly included and referenced for the application to function correctly.
+## Project history and credits
 
-## Acknowledgments
-This project builds upon the original work created by [UC Forum Thread](https://www.unknowncheats.me/forum/escape-from-tarkov/482418-2d-map-dma-radar-wip.html) and its continuation [EFT-DMA-Radar-v2](https://www.unknowncheats.me/forum/escape-from-tarkov/639021-dma-radar-v2.html) by x0m, Keegi and MasterKeef. It is basically a fork of a EFT-DMA-Radar-v2 adapted to UE4 Squad base. It has a lot of perfomance issues, as well as some bugs.
+This project originated from [Butter2222/squad-dma](https://github.com/Butter2222/squad-dma), through [Zach3rry59/squad-dma](https://github.com/Zach3rry59/squad-dma). The Git history is retained to preserve that provenance and the subsequent Hell Let Loose adaptation.
 
-## Preview
-![image](https://github.com/Butter2222/squad-dma/blob/main/preview/radar-preview.png)
+The original project credits x0m, Keegi, and MasterKeef, the [original EFT radar thread](https://www.unknowncheats.me/forum/escape-from-tarkov/482418-2d-map-dma-radar-wip.html), and [EFT-DMA-Radar-v2](https://www.unknowncheats.me/forum/escape-from-tarkov/639021-dma-radar-v2.html).
+
+The old Squad mod-support list and screenshot are not presented as Hell Let Loose capabilities. Historical assets and commits remain in the repository for traceability.
+
+## Validation scope
+
+A successful build checks compilation and resource references. It does not establish compatibility with the current game version or validate runtime behavior with hardware attached.

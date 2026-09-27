@@ -1,4 +1,4 @@
-﻿using SharpDX;
+using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
 using System.Runtime.InteropServices;
@@ -7,7 +7,7 @@ using SharpDX.DirectWrite;
 using System.Diagnostics;
 using System;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     public struct FTransform
     {

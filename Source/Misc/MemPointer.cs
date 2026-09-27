@@ -1,6 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     /// <summary>
     /// Represents a 64-Bit Unsigned Pointer Address.

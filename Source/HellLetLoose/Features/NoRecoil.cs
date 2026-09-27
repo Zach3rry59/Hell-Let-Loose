@@ -1,6 +1,6 @@
-﻿using Offsets;
+using Offsets;
 
-namespace squad_dma.Source.Squad.Features
+namespace HellLetLoose.Source.HellLetLoose.Features
 {
     public class NoRecoil : Manager
     {

@@ -1,7 +1,7 @@
 using Offsets;
-using squad_dma.Source.Squad.Features;
+using HellLetLoose.Source.HellLetLoose.Features;
 
-namespace squad_dma.Source.Squad
+namespace HellLetLoose.Source.HellLetLoose
 {
     public class Manager : IDisposable
     {

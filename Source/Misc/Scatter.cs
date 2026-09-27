@@ -1,9 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Text;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     #region ReadScatter
     public interface IScatterEntry

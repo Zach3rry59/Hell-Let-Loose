@@ -1,8 +1,8 @@
-﻿using SkiaSharp;
+using SkiaSharp;
 using System.Diagnostics;
 using System.Numerics;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     /// <summary>
     /// Class containing Game Player Data.
@@ -19,7 +19,7 @@ namespace squad_dma
         public float Health { get; set; } = -1;
         public float MaxHealth { get; set; } = -1;
         public int TeamID { get; set; } = -1;
-        public int SquadID { get; set; } = -1;
+        public int UnitID { get; set; } = -1;
         public Team Team { get; set; } = Team.Unknown;
         public ulong Mesh { get; set; }
         public FTransform ComponentToWorld { get; set; }
@@ -40,11 +40,11 @@ namespace squad_dma
             return localPlayer.Team == this.Team;
         }
 
-        public bool IsInMySquad()
+        public bool IsInMyUnit()
         {
             return IsFriendly() &&
-                   SquadID != -1 &&
-                   SquadID == Memory.LocalPlayer?.SquadID;
+                   UnitID != -1 &&
+                   UnitID == Memory.LocalPlayer?.UnitID;
         }
         public ActorType ActorType { get; set; } = ActorType.Player;
         private Vector3 _pos = new Vector3(0, 0, 0);

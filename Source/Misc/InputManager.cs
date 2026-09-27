@@ -1,8 +1,8 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Text;
 using Vmmsharp;
 
-namespace squad_dma
+namespace HellLetLoose
 {
     public class InputManager
     {
